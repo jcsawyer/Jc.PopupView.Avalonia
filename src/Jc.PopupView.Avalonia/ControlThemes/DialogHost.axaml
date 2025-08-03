@@ -1,0 +1,28 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:popup="https://github.com/jcsawyer"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <popup:DialogHost />
+    </Design.PreviewWith>
+
+    <ControlTheme x:Key="{x:Type popup:DialogHost}" TargetType="popup:DialogHost">
+        <Setter Property="BackgroundMask" Value="#000000"></Setter>
+        <Setter Property="AnimationDuration" Value="0:0:0.25"></Setter>
+        <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
+        <Setter Property="VerticalAlignment" Value="Stretch"></Setter>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid>
+                    <!-- Content -->
+                    <ContentPresenter
+                        Name="PART_ContentPresenter"
+                        Padding="{TemplateBinding SafePadding}"
+                        Content="{TemplateBinding Content}" />
+
+                    <!-- Sheet Host -->
+                    <Grid Name="PART_DialogHost" />
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+</ResourceDictionary>

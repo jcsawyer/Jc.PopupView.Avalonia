@@ -1,0 +1,165 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="https://github.com/jcsawyer"
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                    xmlns:converters="clr-namespace:Jc.PopupView.Avalonia.Converters"
+                    xmlns:behaviors="clr-namespace:Jc.PopupView.Avalonia.Behaviors">
+    <Design.PreviewWith>
+        <Grid ColumnDefinitions="300" RowDefinitions="300">
+            <controls:DialogHost Grid.Column="0">
+                <controls:DialogHost.Sheets>
+                    <controls:Sheet Grid.Column="0" IsOpen="True">
+                        <TextBlock Text="This is a sheet preview." />
+                    </controls:Sheet>
+                </controls:DialogHost.Sheets>
+            </controls:DialogHost>
+        </Grid>
+    </Design.PreviewWith>
+
+    <!-- Converters -->
+    <converters:SheetPillLocationVisibilityConverter x:Key="SheetPillLocationToVisibilityConverter" />
+    <converters:SheetPullLocationPaddingConverter x:Key="SheetPillLocationPaddingConverter" />
+
+    <!-- Defaults -->
+    <system:TimeSpan x:Key="SheetAnimationDuration">0:0:0.3</system:TimeSpan>
+    <SolidColorBrush x:Key="SheetBackground">#ffffff</SolidColorBrush>
+    <SolidColorBrush x:Key="SheetMaskColor">#3a000000</SolidColorBrush>
+    <SolidColorBrush x:Key="SheetInternalPillColor">#20000000</SolidColorBrush>
+    <controls:SheetPillLocation x:Key="SheetPillLocation">Internal</controls:SheetPillLocation>
+    <CornerRadius x:Key="SheetCornerRadius">30 30 0 0</CornerRadius>
+
+    <!-- Sheet -->
+    <ControlTheme x:Key="{x:Type controls:Sheet}" TargetType="controls:Sheet">
+        <Setter Property="Background" Value="{DynamicResource SheetBackground}"></Setter>
+        <Setter Property="MaskColor" Value="{DynamicResource SheetMaskColor}"></Setter>
+        <Setter Property="AnimationDuration" Value="{DynamicResource SheetAnimationDuration}"></Setter>
+        <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}"></Setter>
+        <Setter Property="PillColor" Value="{DynamicResource SheetInternalPillColor}"></Setter>
+        <Setter Property="PillLocation" Value="{DynamicResource SheetPillLocation}"></Setter>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid Name="PART_SheetRoot"
+                      IsHitTestVisible="{TemplateBinding IsOpen}">
+                    <Grid
+                        Name="PART_SheetContainer"
+                        VerticalAlignment="Stretch">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="100" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <!-- Mask -->
+                        <Rectangle
+                            Name="PART_SheetMask"
+                            Grid.RowSpan="2"
+                            Fill="{DynamicResource SheetMaskColor}"
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch"
+                            Opacity="1">
+                            <Rectangle.Transitions>
+                                <Transitions>
+                                    <DoubleTransition Property="Opacity"
+                                                      Duration="{Binding AnimationDuration, RelativeSource={RelativeSource TemplatedParent}}"
+                                                      Easing="CubicEaseInOut">
+                                    </DoubleTransition>
+                                </Transitions>
+                            </Rectangle.Transitions>
+                        </Rectangle>
+
+                        <!-- Sheet -->
+                        <Grid
+                            Name="PART_Sheet"
+                            Grid.Row="1"
+                            RowDefinitions="Auto, *">
+                            <Interaction.Behaviors>
+                                <behaviors:DialogDragBehavior
+                                    ClickToDismiss="False"
+                                    SnapBack="True"
+                                    AnimationDuration="{Binding AnimationDuration, RelativeSource={RelativeSource TemplatedParent}}" />
+                            </Interaction.Behaviors>
+                            <Border
+                                Name="PART_ExternalSheetPill"
+                                Grid.Row="0"
+                                Height="35"
+                                Padding="0"
+                                Margin="0 20 0 0"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Background="Transparent"
+                                IsVisible="{TemplateBinding PillLocation, Converter={StaticResource SheetPillLocationToVisibilityConverter}, ConverterParameter=External}">
+                                <Border
+                                    Background="{TemplateBinding PillColor}"
+                                    Width="50"
+                                    Height="5"
+                                    CornerRadius="2.5"
+                                    HorizontalAlignment="Center">
+                                </Border>
+                            </Border>
+                            <Border
+                                Name="PART_SheetContent"
+                                Grid.Row="1"
+                                CornerRadius="{DynamicResource SheetCornerRadius}"
+                                Background="{TemplateBinding Background}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Padding="0">
+                                <Grid RowDefinitions="Auto, *" ColumnDefinitions="*">
+                                    <Border
+                                        Name="PART_InternalSheetPill"
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        Height="35"
+                                        Padding="0"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        Background="Transparent"
+                                        IsVisible="{TemplateBinding PillLocation, Converter={StaticResource SheetPillLocationToVisibilityConverter}, ConverterParameter=Internal}">
+                                        <Border
+                                            Background="{TemplateBinding PillColor}"
+                                            Width="50"
+                                            Height="5"
+                                            CornerRadius="2.5"
+                                            HorizontalAlignment="Center">
+                                        </Border>
+                                    </Border>
+                                    <Border Grid.Row="1"
+                                            Padding="{TemplateBinding PillLocation, Converter={StaticResource SheetPillLocationPaddingConverter}}">
+                                        <ScrollViewer
+                                            Name="PART_ScrollViewer"
+                                            HorizontalScrollBarVisibility="Disabled"
+                                            VerticalScrollBarVisibility="Auto">
+                                            <ContentPresenter
+                                                Name="PART_ContentPresenter"
+                                                TextWrapping="Wrap"
+                                                HorizontalAlignment="Stretch"
+                                                VerticalAlignment="Stretch"
+                                                Content="{TemplateBinding Content}" />
+                                        </ScrollViewer>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:closed /template/ Rectangle#PART_SheetMask">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+        
+        <Style Selector="^:closing /template/ Rectangle#PART_SheetMask">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+        
+        <Style Selector="^:open /template/ Rectangle#PART_SheetMask">
+            <Setter Property="Opacity" Value="1"></Setter>
+        </Style>
+        
+        <Style Selector="^:opening /template/ Rectangle#PART_SheetMask">
+            <Setter Property="Opacity" Value="1"></Setter>
+        </Style>
+
+        <Style Selector="^:closed">
+            <Setter Property="Opacity" Value="0"></Setter>
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>
