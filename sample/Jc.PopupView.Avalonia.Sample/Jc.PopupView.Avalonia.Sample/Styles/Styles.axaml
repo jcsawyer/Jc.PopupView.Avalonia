@@ -59,7 +59,7 @@
         <Setter Property="CornerRadius" Value="10"></Setter>
         <Setter Property="Background" Value="#90AFC5"></Setter>
     </Style>
-    <Style Selector="Border.icon > Border">
+    <Style Selector="Border.icon Border">
         <Setter Property="Background" Value="#336B87"></Setter>
         <Setter Property="CornerRadius" Value="5"></Setter>
     </Style>

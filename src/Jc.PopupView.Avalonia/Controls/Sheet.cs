@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using Avalonia.Metadata;
 using Avalonia.VisualTree;
@@ -10,12 +11,12 @@ using Jc.PopupView.Avalonia.Behaviors;
 
 namespace Jc.PopupView.Avalonia.Controls;
 
-[PseudoClasses(":open", ":closed")]
+[PseudoClasses(":open", ":opening", ":closed", ":closing")]
 public sealed class Sheet : TemplatedControl, IDialog
 {
     public static readonly StyledProperty<TimeSpan> AnimationDurationProperty =
         AvaloniaProperty.Register<Sheet, TimeSpan>(
-            nameof(AnimationDuration) , defaultValue: TimeSpan.FromSeconds(0.5));
+            nameof(AnimationDuration), defaultValue: TimeSpan.FromSeconds(0.5));
 
     public TimeSpan AnimationDuration
     {
@@ -115,6 +116,21 @@ public sealed class Sheet : TemplatedControl, IDialog
     {
         get => GetValue(ContentProperty);
         set => SetValue(ContentProperty, value);
+    }
+
+    protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
+    {
+        base.OnApplyTemplate(e);
+        if (e.NameScope.Find<Rectangle>("PART_SheetMask") is { } sheetContent)
+        {
+            sheetContent.AddHandler(PointerPressedEvent, (_, _) =>
+            {
+                if (CloseOnClickOutside)
+                {
+                    IsOpen = false;
+                }
+            });
+        }
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)

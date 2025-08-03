@@ -110,10 +110,11 @@ internal sealed class DialogDragBehavior : Behavior<Grid>
         if (_compositionVisual is { } visual)
         {
             _initialOffset = visual.Offset;
-            if (AssociatedObject.FindAncestorOfType<IDialog>() is { IsOpen: false })
+            if (AssociatedObject.FindAncestorOfType<IDialog>() is { IsOpen: false } && _dialogSize is not null)
             {
-                visual.Offset = new Vector3D(0,
-                    (float)(_dialogSize?.Height + _initialOffset?.Y ?? _clientSize.Height), 0);
+                visual.Offset = new Vector3D(visual.Offset.X,
+                    (float)((_compositionVisual.Offset.Y) + _dialogSize.Value.Height),
+                    _compositionVisual.Offset.Z);
             }
         }
 
@@ -129,10 +130,10 @@ internal sealed class DialogDragBehavior : Behavior<Grid>
 
     private void GridOnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        // if (AssociatedObject.FindAncestorOfType<IDialog>() is not { } dialog || !dialog.IsOpen)
-        // {
-        //     return;
-        // }
+        if (AssociatedObject.FindAncestorOfType<IDialog>() is not { } dialog || !dialog.IsOpen)
+        {
+            return;
+        }
         if (e.GetCurrentPoint(AssociatedObject).Properties.IsLeftButtonPressed)
         {
             _isDragging = true;
@@ -204,15 +205,16 @@ internal sealed class DialogDragBehavior : Behavior<Grid>
             return;
         }
 
-        var timeRemaining = ((_dialogSize?.Height ?? _clientSize.Height) - _compositionVisual.Offset.Y) /
-            (_dialogSize?.Height ?? _clientSize.Height) * AnimationDuration.TotalMilliseconds;
+        var timeRemaining = _compositionVisual.Offset.Y / (_dialogSize?.Height ?? _clientSize.Height) *
+                            AnimationDuration.TotalMilliseconds;
         if (timeRemaining <= 0)
         {
             return;
         }
+        
 
         var animation = _compositor.CreateVector3KeyFrameAnimation();
-        animation.Duration = TimeSpan.FromMilliseconds(timeRemaining);
+        animation.Duration = TimeSpan.FromMilliseconds(AnimationDuration.TotalMilliseconds);
 
         var value = Origin switch
         {

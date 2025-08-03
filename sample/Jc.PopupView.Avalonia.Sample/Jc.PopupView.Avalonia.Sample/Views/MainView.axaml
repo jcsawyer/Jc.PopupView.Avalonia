@@ -25,16 +25,18 @@
                         <DoubleTransition Property="Opacity" Duration="0:0:0.1"></DoubleTransition>
                     </Transitions>
                 </Button.Transitions>
-                <StackPanel Orientation="Horizontal" Spacing="20">
-                    <Border Classes="icon">
-                        <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="40"
-                                CornerRadius="5 5 10 10" />
+                <Grid ColumnSpacing="20" RowSpacing="10" ColumnDefinitions="Auto, *">
+                    <Border Grid.Column="0" Classes="icon">
+                        <Grid RowDefinitions="*, Auto">
+                            <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="40"
+                                    CornerRadius="5 5 10 10" />
+                        </Grid>
                     </Border>
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock Classes="h2" Text="Full Size" />
-                        <TextBlock Classes="p" Text="Action sheet that fits to the full size of the screen." />
-                    </StackPanel>
-                </StackPanel>
+                    <Grid Grid.Column="1" RowDefinitions="Auto, Auto" ColumnDefinitions="*">
+                        <TextBlock Grid.Row="0" Classes="h2" Text="Action sheet one" />
+                        <TextBlock Grid.Row="1" Classes="p" Text="Action sheet that fits to the full size of the screen." />
+                    </Grid>
+                </Grid>
             </Button>
             <!-- Pill External -->
             <Button Classes="panel" Command="{Binding OpenSheet2Command}">
@@ -43,8 +45,8 @@
                         <DoubleTransition Property="Opacity" Duration="0:0:0.3"></DoubleTransition>
                     </Transitions>
                 </Button.Transitions>
-                <StackPanel Orientation="Horizontal" Spacing="20">
-                    <Border Classes="icon">
+                <Grid ColumnSpacing="20" RowSpacing="10" ColumnDefinitions="Auto, *">
+                    <Border Grid.Column="0" Classes="icon">
                         <Grid RowDefinitions="*, Auto">
                             <Border Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="3"
                                     Width="10" CornerRadius="1" Margin="0 0 0 2" />
@@ -52,16 +54,16 @@
                                     CornerRadius="5 5 10 10" />
                         </Grid>
                     </Border>
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock Classes="h2" Text="Pill Outside" />
-                        <TextBlock Classes="p"
+                    <Grid Grid.Column="1" RowDefinitions="Auto, Auto" ColumnDefinitions="*">
+                        <TextBlock Grid.Row="0" Classes="h2" Text="Action sheet two" />
+                        <TextBlock Grid.Row="1" Classes="p"
                                    Text="Action sheet where the drag indicator pill is on the outside of the content panel." />
-                    </StackPanel>
-                </StackPanel>
+                    </Grid>
+                </Grid>
             </Button>
         </StackPanel>
             <popup:DialogHost.Sheets>
-                <popup:Sheet IsOpen="{Binding IsSheet1Open, Mode=TwoWay}">
+                <popup:Sheet IsOpen="{Binding IsSheet1Open, Mode=TwoWay}" CloseOnClickOutside="True">
                     <sheets:Sheet1 />
                 </popup:Sheet>
                 <popup:Sheet IsOpen="{Binding IsSheet2Open, Mode=TwoWay}" PillLocation="External">

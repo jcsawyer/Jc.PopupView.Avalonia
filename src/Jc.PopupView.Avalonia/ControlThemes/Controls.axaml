@@ -4,7 +4,6 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <MergeResourceInclude Source="/ControlThemes/DialogHost.axaml" />
-                <MergeResourceInclude Source="/ControlThemes/ElasticScrollViewer.axaml" />
                 <MergeResourceInclude Source="/ControlThemes/Sheet.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
