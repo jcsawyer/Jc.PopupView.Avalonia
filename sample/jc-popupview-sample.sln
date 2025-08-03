@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jc.PopupView.Avalonia.Sample", "Jc.PopupView.Avalonia.Sample\Jc.PopupView.Avalonia.Sample\Jc.PopupView.Avalonia.Sample.csproj", "{947B6FF1-CF5D-4BAE-BC0A-9D353A715BF4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jc.PopupView.Avalonia.Sample.Android", "Jc.PopupView.Avalonia.Sample\Jc.PopupView.Avalonia.Sample.Android\Jc.PopupView.Avalonia.Sample.Android.csproj", "{A6F7F081-FEA6-4B93-98C5-4DB167CEAB32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jc.PopupView.Avalonia.Sample.Desktop", "Jc.PopupView.Avalonia.Sample\Jc.PopupView.Avalonia.Sample.Desktop\Jc.PopupView.Avalonia.Sample.Desktop.csproj", "{1CB1D876-673D-4BB4-8D9D-58A94FBB73F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jc.PopupView.Avalonia.Sample.iOS", "Jc.PopupView.Avalonia.Sample\Jc.PopupView.Avalonia.Sample.iOS\Jc.PopupView.Avalonia.Sample.iOS.csproj", "{5EC643B4-08A7-4CA5-B6E9-F9053D684EDF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jc.PopupView.Avalonia.Sample.Browser", "Jc.PopupView.Avalonia.Sample\Jc.PopupView.Avalonia.Sample.Browser\Jc.PopupView.Avalonia.Sample.Browser.csproj", "{E4884D68-029F-423F-9733-151EB8323190}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{C1146E12-0790-4C1A-886C-36213E3FF8F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jc.PopupView.Avalonia", "..\src\Jc.PopupView.Avalonia\Jc.PopupView.Avalonia.csproj", "{7B80EC0E-257D-4CF0-B374-83216B6BA7D5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{947B6FF1-CF5D-4BAE-BC0A-9D353A715BF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{947B6FF1-CF5D-4BAE-BC0A-9D353A715BF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{947B6FF1-CF5D-4BAE-BC0A-9D353A715BF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{947B6FF1-CF5D-4BAE-BC0A-9D353A715BF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6F7F081-FEA6-4B93-98C5-4DB167CEAB32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6F7F081-FEA6-4B93-98C5-4DB167CEAB32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6F7F081-FEA6-4B93-98C5-4DB167CEAB32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6F7F081-FEA6-4B93-98C5-4DB167CEAB32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CB1D876-673D-4BB4-8D9D-58A94FBB73F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CB1D876-673D-4BB4-8D9D-58A94FBB73F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CB1D876-673D-4BB4-8D9D-58A94FBB73F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CB1D876-673D-4BB4-8D9D-58A94FBB73F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EC643B4-08A7-4CA5-B6E9-F9053D684EDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EC643B4-08A7-4CA5-B6E9-F9053D684EDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EC643B4-08A7-4CA5-B6E9-F9053D684EDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EC643B4-08A7-4CA5-B6E9-F9053D684EDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4884D68-029F-423F-9733-151EB8323190}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4884D68-029F-423F-9733-151EB8323190}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4884D68-029F-423F-9733-151EB8323190}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4884D68-029F-423F-9733-151EB8323190}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B80EC0E-257D-4CF0-B374-83216B6BA7D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B80EC0E-257D-4CF0-B374-83216B6BA7D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B80EC0E-257D-4CF0-B374-83216B6BA7D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B80EC0E-257D-4CF0-B374-83216B6BA7D5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{947B6FF1-CF5D-4BAE-BC0A-9D353A715BF4} = {C1146E12-0790-4C1A-886C-36213E3FF8F1}
+		{A6F7F081-FEA6-4B93-98C5-4DB167CEAB32} = {C1146E12-0790-4C1A-886C-36213E3FF8F1}
+		{E4884D68-029F-423F-9733-151EB8323190} = {C1146E12-0790-4C1A-886C-36213E3FF8F1}
+		{1CB1D876-673D-4BB4-8D9D-58A94FBB73F5} = {C1146E12-0790-4C1A-886C-36213E3FF8F1}
+		{5EC643B4-08A7-4CA5-B6E9-F9053D684EDF} = {C1146E12-0790-4C1A-886C-36213E3FF8F1}
+	EndGlobalSection
+EndGlobal

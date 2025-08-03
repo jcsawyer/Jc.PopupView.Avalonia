@@ -1,0 +1,73 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Jc.PopupView.Avalonia.Sample.ViewModels"
+             xmlns:popup="https://github.com/jcsawyer"
+             xmlns:sheets="clr-namespace:Jc.PopupView.Avalonia.Sample.Views.Sheets"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Jc.PopupView.Avalonia.Sample.Views.MainView"
+             x:DataType="vm:MainViewModel"
+             TopLevel.AutoSafeAreaPadding="False">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainViewModel />
+    </Design.DataContext>
+    <Grid Background="#fbf8fd">
+        <popup:DialogHost>
+            <StackPanel Spacing="20" Margin="20">
+            <TextBlock Classes="h1">Action sheets</TextBlock>
+            <!-- Pill Internal -->
+            <Button Classes="panel" Command="{Binding OpenSheet1Command}">
+                <Button.Transitions>
+                    <Transitions>
+                        <DoubleTransition Property="Opacity" Duration="0:0:0.1"></DoubleTransition>
+                    </Transitions>
+                </Button.Transitions>
+                <StackPanel Orientation="Horizontal" Spacing="20">
+                    <Border Classes="icon">
+                        <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="40"
+                                CornerRadius="5 5 10 10" />
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Classes="h2" Text="Full Size" />
+                        <TextBlock Classes="p" Text="Action sheet that fits to the full size of the screen." />
+                    </StackPanel>
+                </StackPanel>
+            </Button>
+            <!-- Pill External -->
+            <Button Classes="panel" Command="{Binding OpenSheet2Command}">
+                <Button.Transitions>
+                    <Transitions>
+                        <DoubleTransition Property="Opacity" Duration="0:0:0.3"></DoubleTransition>
+                    </Transitions>
+                </Button.Transitions>
+                <StackPanel Orientation="Horizontal" Spacing="20">
+                    <Border Classes="icon">
+                        <Grid RowDefinitions="*, Auto">
+                            <Border Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="3"
+                                    Width="10" CornerRadius="1" Margin="0 0 0 2" />
+                            <Border Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="30"
+                                    CornerRadius="5 5 10 10" />
+                        </Grid>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Classes="h2" Text="Pill Outside" />
+                        <TextBlock Classes="p"
+                                   Text="Action sheet where the drag indicator pill is on the outside of the content panel." />
+                    </StackPanel>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+            <popup:DialogHost.Sheets>
+                <popup:Sheet IsOpen="{Binding IsSheet1Open, Mode=TwoWay}">
+                    <sheets:Sheet1 />
+                </popup:Sheet>
+                <popup:Sheet IsOpen="{Binding IsSheet2Open, Mode=TwoWay}" PillLocation="External">
+                    <sheets:Sheet1 />
+                </popup:Sheet>
+            </popup:DialogHost.Sheets>
+        </popup:DialogHost>
+    </Grid>
+</UserControl>

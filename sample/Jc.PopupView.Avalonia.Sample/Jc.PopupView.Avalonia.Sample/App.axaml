@@ -1,0 +1,13 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:popup="https://github.com/jcsawyer"
+             x:Class="Jc.PopupView.Avalonia.Sample.App"
+             RequestedThemeVariant="Default">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+  
+    <Application.Styles>
+        <FluentTheme />
+        <popup:JcPopupView />
+        <StyleInclude Source="Styles/Styles.axaml" />
+    </Application.Styles>
+</Application>
