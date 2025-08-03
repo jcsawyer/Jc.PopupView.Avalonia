@@ -80,6 +80,27 @@ public class DialogHost : TemplatedControl
         base.OnApplyTemplate(e);
         _dialogHost = e.NameScope.Find<Grid>("PART_DialogHost");
         UpdateVisualChildren();
+        
+        Sheets.CollectionChanged += (sender, args) =>
+        {
+            if (args.NewItems is not null)
+                foreach (var sheet in args.NewItems)
+                {
+                    if (sheet is Control control)
+                    {
+                        _dialogHost.Children.Add(control);
+                    }
+                }
+
+            if (args.OldItems is not null)
+                foreach (var sheet in args.OldItems)
+                {
+                    if (sheet is Control control)
+                    {
+                        _dialogHost.Children.Remove(control);
+                    }
+                }
+        };
     }
 
     protected override void OnLoaded(RoutedEventArgs e)

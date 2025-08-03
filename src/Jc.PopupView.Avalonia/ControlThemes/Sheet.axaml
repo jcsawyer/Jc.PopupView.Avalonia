@@ -21,7 +21,7 @@
     <converters:SheetPullLocationPaddingConverter x:Key="SheetPillLocationPaddingConverter" />
 
     <!-- Defaults -->
-    <system:TimeSpan x:Key="SheetAnimationDuration">0:0:0.3</system:TimeSpan>
+    <system:TimeSpan x:Key="SheetAnimationDuration">0:0:0.2</system:TimeSpan>
     <SolidColorBrush x:Key="SheetBackground">#ffffff</SolidColorBrush>
     <SolidColorBrush x:Key="SheetMaskColor">#3a000000</SolidColorBrush>
     <SolidColorBrush x:Key="SheetInternalPillColor">#20000000</SolidColorBrush>
@@ -70,10 +70,12 @@
                             Name="PART_Sheet"
                             Grid.Row="1"
                             RowDefinitions="Auto, *">
+                            <Grid.RenderTransform>
+                                <TranslateTransform Y="0" />
+                            </Grid.RenderTransform>
                             <Interaction.Behaviors>
                                 <behaviors:DialogDragBehavior
                                     ClickToDismiss="False"
-                                    SnapBack="True"
                                     AnimationDuration="{Binding AnimationDuration, RelativeSource={RelativeSource TemplatedParent}}" />
                             </Interaction.Behaviors>
                             <Border
@@ -142,18 +144,28 @@
                 </Grid>
             </ControlTemplate>
         </Setter>
-        <Style Selector="^:closed /template/ Rectangle#PART_SheetMask">
-            <Setter Property="Opacity" Value="0" />
+        <Style Selector="^">
+            <Setter Property="Opacity" Value="0"></Setter>
         </Style>
-        
-        <Style Selector="^:closing /template/ Rectangle#PART_SheetMask">
-            <Setter Property="Opacity" Value="0" />
+        <Style Selector="^:open, ^:opening">
+            <Setter Property="Opacity" Value="1"></Setter>
         </Style>
-        
-        <Style Selector="^:open /template/ Rectangle#PART_SheetMask">
+        <Style Selector="^:closing">
             <Setter Property="Opacity" Value="1"></Setter>
         </Style>
         
+        <Style Selector="^:closed /template/ Rectangle#PART_SheetMask">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style Selector="^:closing /template/ Rectangle#PART_SheetMask">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style Selector="^:open /template/ Rectangle#PART_SheetMask">
+            <Setter Property="Opacity" Value="1"></Setter>
+        </Style>
+
         <Style Selector="^:opening /template/ Rectangle#PART_SheetMask">
             <Setter Property="Opacity" Value="1"></Setter>
         </Style>

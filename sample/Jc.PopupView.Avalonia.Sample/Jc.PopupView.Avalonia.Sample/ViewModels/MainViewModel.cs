@@ -1,4 +1,6 @@
 ﻿using System.Windows.Input;
+using Avalonia.Controls;
+using Jc.PopupView.Avalonia.Services;
 using ReactiveUI;
 
 namespace Jc.PopupView.Avalonia.Sample.ViewModels;
@@ -20,10 +22,13 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _isSheet2Open, value);
     }
     public ICommand OpenSheet2Command { get; }
+    
+    public ICommand OpenSheet3Command { get; }
 
     public MainViewModel()
     {
         OpenSheet1Command = ReactiveCommand.Create(() => IsSheet1Open = true);
         OpenSheet2Command = ReactiveCommand.Create(() => IsSheet2Open = true);
+        OpenSheet3Command = ReactiveCommand.Create(() => new DialogService().OpenSheet(new TextBlock { Text = "Hello, from dynamic dialog!" }));
     }
 }

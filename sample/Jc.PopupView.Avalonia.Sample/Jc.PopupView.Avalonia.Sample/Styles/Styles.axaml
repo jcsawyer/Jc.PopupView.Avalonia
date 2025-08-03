@@ -11,18 +11,18 @@
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
     <Style Selector="TextBlock.h1">
-        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontSize" Value="22" />
         <Setter Property="FontWeight" Value="Medium" />
     </Style>
     <Style Selector="TextBlock.h2">
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontSize" Value="16" />
     </Style>
     <Style Selector="TextBlock.h3">
         <Setter Property="FontSize" Value="12" />
     </Style>
     <Style Selector="TextBlock.p">
         <Setter Property="LineSpacing" Value="1.5" />
-        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontSize" Value="10" />
         <Setter Property="FontWeight" Value="Light"></Setter>
     </Style>
     <Style Selector="Label.h1">
@@ -42,6 +42,7 @@
         <Setter Property="CornerRadius" Value="10"></Setter>
         <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
         <Setter Property="Padding" Value="10"></Setter>
+        <Setter Property="Height" Value="70"></Setter>
     </Style>
     <Style Selector="Button.panel:pointerover">
         <Setter Property="Background" Value="#ffffff"></Setter>
@@ -58,6 +59,7 @@
         <Setter Property="Height" Value="50"></Setter>
         <Setter Property="CornerRadius" Value="10"></Setter>
         <Setter Property="Background" Value="#90AFC5"></Setter>
+        <Setter Property="Margin" Value="0 -10 0 0"></Setter>
     </Style>
     <Style Selector="Border.icon Border">
         <Setter Property="Background" Value="#336B87"></Setter>
