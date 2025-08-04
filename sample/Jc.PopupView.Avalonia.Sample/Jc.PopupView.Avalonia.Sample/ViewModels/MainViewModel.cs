@@ -24,6 +24,10 @@ public class MainViewModel : ViewModelBase
     public ICommand OpenSheet2Command { get; }
     
     public ICommand OpenSheet3Command { get; }
+    
+    public ICommand OpenToast1Command { get; }
+    public ICommand OpenToast2Command { get; }
+    public ICommand OpenToast3Command { get; }
 
     public MainViewModel()
     {

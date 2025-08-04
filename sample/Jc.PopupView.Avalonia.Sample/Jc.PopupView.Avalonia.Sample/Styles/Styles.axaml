@@ -22,7 +22,7 @@
     </Style>
     <Style Selector="TextBlock.p">
         <Setter Property="LineSpacing" Value="1.5" />
-        <Setter Property="FontSize" Value="10" />
+        <Setter Property="FontSize" Value="12" />
         <Setter Property="FontWeight" Value="Light"></Setter>
     </Style>
     <Style Selector="Label.h1">
@@ -43,6 +43,14 @@
         <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
         <Setter Property="Padding" Value="10"></Setter>
         <Setter Property="Height" Value="70"></Setter>
+    </Style>
+    <Style Selector="Button.panel:disabled">
+        <Setter Property="Background" Value="#ffffff"></Setter>
+        <Setter Property="CornerRadius" Value="10"></Setter>
+        <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
+        <Setter Property="Padding" Value="10"></Setter>
+        <Setter Property="Height" Value="70"></Setter>
+        <Setter Property="Opacity" Value="0.3"></Setter>
     </Style>
     <Style Selector="Button.panel:pointerover">
         <Setter Property="Background" Value="#ffffff"></Setter>
