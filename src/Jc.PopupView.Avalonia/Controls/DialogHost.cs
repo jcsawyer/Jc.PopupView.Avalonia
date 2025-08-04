@@ -16,26 +16,6 @@ public class DialogHost : TemplatedControl
 {
     private Grid? _dialogHost;
 
-    public static readonly StyledProperty<IBrush?> BackgroundMaskProperty =
-        AvaloniaProperty.Register<DialogHost, IBrush?>(
-            nameof(BackgroundMask));
-
-    public IBrush? BackgroundMask
-    {
-        get => GetValue(BackgroundMaskProperty);
-        set => SetValue(BackgroundMaskProperty, value);
-    }
-
-    public static readonly StyledProperty<TimeSpan> AnimationDurationProperty =
-        AvaloniaProperty.Register<DialogHost, TimeSpan>(
-            nameof(AnimationDuration));
-
-    public TimeSpan AnimationDuration
-    {
-        get => GetValue(AnimationDurationProperty);
-        set => SetValue(AnimationDurationProperty, value);
-    }
-
     public static readonly StyledProperty<object?> ContentProperty = AvaloniaProperty.Register<DialogHost, object?>(
         nameof(Content));
 
@@ -56,6 +36,15 @@ public class DialogHost : TemplatedControl
         set => SetValue(SheetsProperty, value);
     }
 
+    public static readonly StyledProperty<AvaloniaList<Toast>> ToastsProperty = AvaloniaProperty.Register<DialogHost, AvaloniaList<Toast>>(
+        nameof(Toasts), defaultValue: new AvaloniaList<Toast>());
+
+    public AvaloniaList<Toast> Toasts
+    {
+        get => GetValue(ToastsProperty);
+        set => SetValue(ToastsProperty, value);
+    }
+    
     public static readonly StyledProperty<bool> UseSafePaddingProperty = AvaloniaProperty.Register<DialogHost, bool>(
         nameof(UseSafePadding), defaultValue: true);
 
@@ -80,7 +69,7 @@ public class DialogHost : TemplatedControl
         base.OnApplyTemplate(e);
         _dialogHost = e.NameScope.Find<Grid>("PART_DialogHost");
         UpdateVisualChildren();
-        
+
         Sheets.CollectionChanged += (sender, args) =>
         {
             if (args.NewItems is not null)
@@ -100,6 +89,31 @@ public class DialogHost : TemplatedControl
                         _dialogHost.Children.Remove(control);
                     }
                 }
+        };
+
+        Toasts.CollectionChanged += (_, args) =>
+        {
+            if (args.NewItems is not null)
+            {
+                foreach (var toast in args.NewItems)
+                {
+                    if (toast is Control control)
+                    {
+                        _dialogHost.Children.Add(control);
+                    }
+                }
+            }
+
+            if (args.OldItems is not null)
+            {
+                foreach (var toast in args.OldItems)
+                {
+                    if (toast is Control control)
+                    {
+                        _dialogHost.Children.Remove(control);
+                    }
+                }
+            }
         };
     }
 
@@ -133,6 +147,17 @@ public class DialogHost : TemplatedControl
 
         _dialogHost.Children.Clear();
         foreach (var child in Sheets)
+        {
+            if (child is Control control)
+            {
+                _dialogHost.Children.Add(control);
+            }
+            else
+            {
+                throw new InvalidDialogHostControl();
+            }
+        }
+        foreach (var child in Toasts)
         {
             if (child is Control control)
             {

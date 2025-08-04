@@ -52,6 +52,7 @@
                             Name="PART_SheetMask"
                             Grid.RowSpan="2"
                             Fill="{DynamicResource SheetMaskColor}"
+                            IsVisible="{TemplateBinding ShowBackgroundMask}"
                             VerticalAlignment="Stretch"
                             HorizontalAlignment="Stretch"
                             Opacity="1">
@@ -74,7 +75,7 @@
                                 <TranslateTransform Y="0" />
                             </Grid.RenderTransform>
                             <Interaction.Behaviors>
-                                <behaviors:DialogDragBehavior
+                                <behaviors:ScrollableDialogDragBehavior
                                     ClickToDismiss="False"
                                     AnimationDuration="{Binding AnimationDuration, RelativeSource={RelativeSource TemplatedParent}}" />
                             </Interaction.Behaviors>

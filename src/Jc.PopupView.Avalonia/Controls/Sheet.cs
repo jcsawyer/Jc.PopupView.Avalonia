@@ -3,55 +3,58 @@ using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Shapes;
+using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Media;
-using Avalonia.Metadata;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 
 namespace Jc.PopupView.Avalonia.Controls;
 
 [PseudoClasses(":open", ":opening", ":closed", ":closing")]
-public sealed class Sheet : TemplatedControl, IDialog
+public class Sheet : DialogBase
 {
     private readonly DispatcherTimer _animationTimer;
     private static readonly TimeSpan AnimationFramerate = TimeSpan.FromMicroseconds(16);
     private Grid? _sheetPart;
     private Rectangle? _maskPart;
-    private bool _isOpening;
-    private bool _isClosing;
 
-    internal bool DetachOnClose { get; set; }
-    
-    private int AnimationTotalTicks => (int)(AnimationDuration.TotalSeconds / AnimationFramerate.TotalSeconds);
+    internal bool DetachOnClose { get; set;  }
 
-    public static readonly StyledProperty<TimeSpan> AnimationDurationProperty =
-        AvaloniaProperty.Register<Sheet, TimeSpan>(
-            nameof(AnimationDuration), defaultValue: TimeSpan.FromSeconds(0.2));
-
-    public TimeSpan AnimationDuration
+    public override bool ClickToDismiss
     {
-        get => GetValue(AnimationDurationProperty);
-        set => SetValue(AnimationDurationProperty, value);
+        get => false;
+        set => throw new InvalidOperationException($"Cannot set close on click for Sheet. Use {nameof(ClickOutsideToDismiss)} instead.");
     }
 
-    public static readonly StyledProperty<bool> IsOpenProperty = AvaloniaProperty.Register<Sheet, bool>(
-        nameof(IsOpen));
+    private int AnimationTotalTicks => (int)(AnimationDuration.TotalSeconds / AnimationFramerate.TotalSeconds);
 
-    public bool IsOpen
+    
+    public new static readonly StyledProperty<bool> IsOpenProperty = AvaloniaProperty.Register<Sheet, bool>(
+        nameof(IsOpen), defaultBindingMode: BindingMode.TwoWay);
+    
+    public override bool IsOpen
     {
         get => GetValue(IsOpenProperty);
         set
         {
             if (value)
             {
-                _isOpening = true;
-                _isClosing = false;
+                if (IsOpening)
+                {
+                    return;
+                }
+                IsOpening = true;
+                IsClosing = false;
             }
             else
             {
-                _isOpening = false;
-                _isClosing = true;
+                if (IsClosing)
+                {
+                    return;
+                }
+                IsOpening = false;
+                IsClosing = true;
             }
 
             UpdatePseudoClasses();
@@ -78,35 +81,8 @@ public sealed class Sheet : TemplatedControl, IDialog
         get => GetValue(PillColorProperty);
         set => SetValue(PillColorProperty, value);
     }
-
-    public static readonly StyledProperty<IBrush> MaskColorProperty = AvaloniaProperty.Register<Sheet, IBrush>(
-        nameof(MaskColor));
-
-    public IBrush MaskColor
-    {
-        get => GetValue(MaskColorProperty);
-        set => SetValue(MaskColorProperty, value);
-    }
-
-    public static readonly StyledProperty<bool> CloseOnClickOutsideProperty = AvaloniaProperty.Register<Sheet, bool>(
-        nameof(ClickOutsideToDismiss));
-
-    public bool ClickOutsideToDismiss
-    {
-        get => GetValue(CloseOnClickOutsideProperty);
-        set => SetValue(CloseOnClickOutsideProperty, value);
-    }
-
-    public static readonly StyledProperty<object?> ContentProperty = AvaloniaProperty.Register<Sheet, object?>(
-        nameof(Content));
-
-    [Content]
-    public object? Content
-    {
-        get => GetValue(ContentProperty);
-        set => SetValue(ContentProperty, value);
-    }
-
+    
+    
     public Sheet()
     {
         _animationTimer = new DispatcherTimer()
@@ -123,13 +99,21 @@ public sealed class Sheet : TemplatedControl, IDialog
             {
                 if (isOpen)
                 {
-                    sheet._isOpening = true;
-                    sheet._isClosing = false;
+                    if (sheet.IsOpening)
+                    {
+                        return;
+                    }
+                    sheet.IsOpening = true;
+                    sheet.IsClosing = false;
                 }
                 else
                 {
-                    sheet._isOpening = false;
-                    sheet._isClosing = true;
+                    if (sheet.IsClosing)
+                    {
+                        return;
+                    }
+                    sheet.IsOpening = false;
+                    sheet.IsClosing = true;
                 }
 
                 sheet.UpdatePseudoClasses();
@@ -145,16 +129,13 @@ public sealed class Sheet : TemplatedControl, IDialog
 
         _sheetPart = e.NameScope.Find<Grid>("PART_Sheet");
         _maskPart = e.NameScope.Find<Rectangle>("PART_SheetMask");
-        if (e.NameScope.Find<Rectangle>("PART_SheetMask") is { } sheetContent)
+        _maskPart?.AddHandler(PointerPressedEvent, (_, _) =>
         {
-            sheetContent.AddHandler(PointerPressedEvent, (_, _) =>
+            if (ClickOutsideToDismiss)
             {
-                if (ClickOutsideToDismiss)
-                {
-                    IsOpen = false;
-                }
-            });
-        }
+                IsOpen = false;
+            }
+        });
     }
 
     protected override void OnLoaded(RoutedEventArgs e)
@@ -177,6 +158,12 @@ public sealed class Sheet : TemplatedControl, IDialog
 
     private void AnimateFrame(object? sender, EventArgs e)
     {
+        if (_sheetPart?.RenderTransform is not TranslateTransform)
+        {
+            _animationTimer.Stop();
+            return;
+        }
+        
         var sheetHeight = _sheetPart.GetTransformedBounds()?.Bounds.Height ?? 0;
         if (IsOpen)
         {
@@ -193,10 +180,10 @@ public sealed class Sheet : TemplatedControl, IDialog
                 {
                     transform.Y = 0;
                     _animationTimer.Stop();
-                    if (_isOpening)
+                    if (IsOpening)
                     {
                         //DialogManager.OnSheetOpened?.Invoke(this, EventArgs.Empty);
-                        _isOpening = false;
+                        IsOpening = false;
                         UpdatePseudoClasses();
                     }
                 }
@@ -221,10 +208,10 @@ public sealed class Sheet : TemplatedControl, IDialog
                 {
                     transform.Y = sheetHeight;
                     _animationTimer.Stop();
-                    if (_isClosing)
+                    if (IsClosing)
                     {
                         //DialogManager.OnSheetClosed?.Invoke(this, EventArgs.Empty);
-                        _isClosing = false;
+                        IsClosing = false;
                         UpdatePseudoClasses();
                         if (DetachOnClose)
                         {
@@ -240,37 +227,5 @@ public sealed class Sheet : TemplatedControl, IDialog
             }
         }
     }
-
-    public void UpdatePseudoClasses()
-    {
-        var opening = _isOpening;
-        var closing = _isClosing;
-        PseudoClasses.Set(":opening", opening);
-        PseudoClasses.Set(":closing", closing);
-
-        if (!opening && !closing)
-        {
-            PseudoClasses.Set(":open", IsOpen);
-            PseudoClasses.Set(":closed", !IsOpen);
-        }
-        else
-        {
-            PseudoClasses.Set(":open", false);
-            PseudoClasses.Set(":closed", false);
-        }
-    }
-
-    public void Close()
-    {
-        if (IsOpen || _isOpening)
-        {
-            IsOpen = false;
-        }
-        else
-        {
-            _isClosing = false;
-            _isOpening = false;
-            UpdatePseudoClasses();
-        }
-    }
+    
 }

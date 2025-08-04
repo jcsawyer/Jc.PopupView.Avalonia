@@ -5,14 +5,47 @@ namespace Jc.PopupView.Avalonia.Services;
 
 public sealed class DialogService : IDialogService
 {
-    public void OpenSheet<TContent>(TContent content) where TContent : Control
+    public void OpenSheet<TContent>(TContent content, Action<Sheet>? configure = null) where TContent : Control
     {
         var dialogHost = DialogHost.GetDialogHost();
-        var sheet = new Sheet { Content = content, DetachOnClose = true, };
+        var sheet = new Sheet();
+        configure?.Invoke(sheet);
+        sheet.Content = content;
+        sheet.DetachOnClose = true;
         sheet.AttachedToVisualTree += (_, _) =>
         {
             sheet.IsOpen = true;
         };
         dialogHost.Sheets.Add(sheet);
+    }
+
+    public void CloseSheet<TContent>(TContent content) where TContent : Control
+    {
+        var dialogHost = DialogHost.GetDialogHost();
+        var sheet = dialogHost.Sheets.FirstOrDefault(s => Equals(s.Content, content));
+        sheet?.Close();
+    }
+
+    public void OpenToast<TContent>(TContent content, Action<Toast>? configure = null) where TContent : Control
+    {
+        var dialogHost = DialogHost.GetDialogHost();
+        var toast = new Toast();
+        configure?.Invoke(toast);
+        
+        toast.Content = content;
+        toast.DetachOnClose = true;
+        
+        toast.AttachedToVisualTree += (_, _) =>
+        {
+            toast.IsOpen = true;
+        };
+        dialogHost.Toasts.Add(toast);
+    }
+
+    public void CloseToast<TContent>(TContent content) where TContent : Control
+    {
+        var dialogHost = DialogHost.GetDialogHost();
+        var toast = dialogHost.Toasts.FirstOrDefault(t => Equals(t.Content, content));
+        toast?.Close();
     }
 }

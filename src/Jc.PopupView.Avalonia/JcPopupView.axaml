@@ -4,10 +4,10 @@
     <Styles.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude Source="ControlThemes/Colours.axaml"></ResourceInclude>
+                <ResourceInclude Source="ControlThemes/Colours.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Styles.Resources>
     
-    <StyleInclude Source="/ControlThemes/Controls.axaml"></StyleInclude>
+    <StyleInclude Source="/ControlThemes/Controls.axaml" />
 </Styles>

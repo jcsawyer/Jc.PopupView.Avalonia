@@ -1,0 +1,128 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="https://github.com/jcsawyer"
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                    xmlns:converters="clr-namespace:Jc.PopupView.Avalonia.Converters"
+                    xmlns:behaviors="clr-namespace:Jc.PopupView.Avalonia.Behaviors">
+    <Design.PreviewWith>
+        <Grid ColumnDefinitions="300" RowDefinitions="300">
+            <controls:DialogHost Grid.Column="0">
+                <controls:DialogHost.Toasts>
+                    <controls:Toast IsOpen="True" Location="Bottom">
+                        <TextBlock Text="This is a bottom toast preview." />
+                    </controls:Toast>
+                    <controls:Toast IsOpen="True" Background="#fe504e" Foreground="#ffffff" ShowBackgroundMask="False">
+                        <TextBlock Text="This is a top toast preview." />
+                    </controls:Toast>
+                </controls:DialogHost.Toasts>
+            </controls:DialogHost>
+        </Grid>
+    </Design.PreviewWith>
+
+    <!-- Converters -->
+    <converters:ToastLocationToVerticalAlignmentConverter x:Key="ToastLocationToVerticalAlignmentConverter" />
+    <converters:ToastLocationToSafeAreaConverter x:Key="ToastLocationToSafeAreaConverter" />
+
+    <!-- Defaults -->
+    <SolidColorBrush x:Key="ToastBackground">#f5f5f5</SolidColorBrush>
+    <SolidColorBrush x:Key="ToastTextColor">#000000</SolidColorBrush>
+    <CornerRadius x:Key="ToastCornerRadius">0</CornerRadius>
+    <system:TimeSpan x:Key="ToastAnimationDuration">0:0:0.3</system:TimeSpan>
+    <SolidColorBrush x:Key="ToastMaskColor">#3a000000</SolidColorBrush>
+    <Thickness x:Key="ToastMargin">10</Thickness>
+
+    <!-- Toast -->
+    <ControlTheme x:Key="{x:Type controls:Toast}" TargetType="controls:Toast">
+        <Setter Property="Background" Value="{DynamicResource ToastBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource ToastTextColor}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource ToastCornerRadius}" />
+        <Setter Property="AnimationDuration" Value="{DynamicResource ToastAnimationDuration}" />
+        <Setter Property="MaskColor" Value="{DynamicResource ToastMaskColor}" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Location" Value="Top"></Setter>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid Name="PART_ToastRoot"
+                      IsHitTestVisible="{TemplateBinding IsOpen}">
+                    <!-- Mask -->
+                    <Rectangle
+                        Name="PART_ToastMask"
+                        Grid.RowSpan="2"
+                        Fill="{DynamicResource ToastMaskColor}"
+                        IsVisible="{TemplateBinding ShowBackgroundMask}"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        Opacity="1">
+                        <Rectangle.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity"
+                                                  Duration="{Binding AnimationDuration, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Easing="CubicEaseInOut">
+                                </DoubleTransition>
+                            </Transitions>
+                        </Rectangle.Transitions>
+                    </Rectangle>
+                    <Grid Name="PART_Toast">
+                        <Interaction.Behaviors>
+                            <behaviors:DialogDragBehavior
+                                ClickToDismiss="{Binding ClickToDismiss, RelativeSource={RelativeSource TemplatedParent}}"
+                                AnimationDuration="{Binding AnimationDuration, RelativeSource={RelativeSource TemplatedParent}}" />
+                        </Interaction.Behaviors>
+                        <Label Content="{TemplateBinding Location}" x:Name="PART_ToastLocation" IsVisible="False"></Label>
+                        <Border Name="PART_ToastContent"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                Margin="{TemplateBinding Padding}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="{TemplateBinding Location, Converter={StaticResource ToastLocationToVerticalAlignmentConverter}}">
+                            <Border.Padding>
+                                <MultiBinding Converter="{StaticResource ToastLocationToSafeAreaConverter}" Mode="TwoWay">
+                                    <Binding Path="SafePadding" Mode="TwoWay" RelativeSource="{RelativeSource AncestorType=controls:DialogHost}" />
+                                    <Binding ElementName="PART_ToastLocation" />
+                                </MultiBinding>
+                            </Border.Padding>
+                            <Border.RenderTransform>
+                                <TranslateTransform Y="0"></TranslateTransform>
+                            </Border.RenderTransform>
+                            <ContentPresenter
+                                Name="PART_ContentPresenter"
+                                TextWrapping="Wrap"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Content="{TemplateBinding Content}" />
+                        </Border>
+                    </Grid>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^">
+            <Setter Property="Opacity" Value="0"></Setter>
+        </Style>
+        <Style Selector="^:open, ^:opening">
+            <Setter Property="Opacity" Value="1"></Setter>
+        </Style>
+        <Style Selector="^:closing">
+            <Setter Property="Opacity" Value="1"></Setter>
+        </Style>
+
+        <Style Selector="^:closed /template/ Rectangle#PART_ToastMask">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style Selector="^:closing /template/ Rectangle#PART_ToastMask">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style Selector="^:open /template/ Rectangle#PART_ToastMask">
+            <Setter Property="Opacity" Value="1"></Setter>
+        </Style>
+
+        <Style Selector="^:opening /template/ Rectangle#PART_ToastMask">
+            <Setter Property="Opacity" Value="1"></Setter>
+        </Style>
+
+        <Style Selector="^:closed">
+            <Setter Property="Opacity" Value="0"></Setter>
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

@@ -10,7 +10,7 @@ using Jc.PopupView.Avalonia.Exceptions;
 
 namespace Jc.PopupView.Avalonia.Behaviors;
 
-internal sealed class DialogDragBehavior : Behavior<Grid>
+internal sealed class ScrollableDialogDragBehavior : Behavior<Grid>
 {
     private IDialog _dialog;
     private bool _isDragging;
@@ -20,7 +20,7 @@ internal sealed class DialogDragBehavior : Behavior<Grid>
     private int? _snapBackThreshold;
 
     public static readonly StyledProperty<bool> ClickToDismissProperty =
-        AvaloniaProperty.Register<DialogDragBehavior, bool>(
+        AvaloniaProperty.Register<ScrollableDialogDragBehavior, bool>(
             nameof(ClickToDismiss));
 
     public bool ClickToDismiss
@@ -30,7 +30,7 @@ internal sealed class DialogDragBehavior : Behavior<Grid>
     }
 
     public static readonly StyledProperty<TimeSpan> AnimationDurationProperty =
-        AvaloniaProperty.Register<DialogDragBehavior, TimeSpan>(
+        AvaloniaProperty.Register<ScrollableDialogDragBehavior, TimeSpan>(
             nameof(AnimationDuration));
 
     public TimeSpan AnimationDuration
@@ -46,7 +46,7 @@ internal sealed class DialogDragBehavior : Behavior<Grid>
         if (AssociatedObject is { } grid)
         {
             grid.AddHandler(InputElement.PointerPressedEvent, GridOnPointerPressed, handledEventsToo: false,
-                routes: RoutingStrategies.Tunnel | RoutingStrategies.Bubble);
+                routes: RoutingStrategies.Tunnel);
         }
     }
 
@@ -98,15 +98,16 @@ internal sealed class DialogDragBehavior : Behavior<Grid>
             _isDragging = true;
             _dragStart = e.GetPosition(AssociatedObject);
             _lastDrag = _dragStart;
+            e.Pointer.Capture(AssociatedObject);
 
             if (AssociatedObject is { } grid)
             {
                 grid.AddHandler(InputElement.PointerReleasedEvent, GridOnPointerReleased, handledEventsToo: true,
-                    routes: RoutingStrategies.Tunnel | RoutingStrategies.Bubble);
+                    routes: RoutingStrategies.Tunnel);
                 grid.AddHandler(InputElement.PointerMovedEvent, GridOnPointerMoved, handledEventsToo: true,
-                    routes: RoutingStrategies.Tunnel | RoutingStrategies.Bubble);
+                    routes: RoutingStrategies.Tunnel);
                 grid.AddHandler(InputElement.PointerCaptureLostEvent, GridOnPointerCaptureLost, handledEventsToo: true,
-                    routes: RoutingStrategies.Tunnel | RoutingStrategies.Bubble);
+                    routes: RoutingStrategies.Tunnel);
             }
         }
     }
@@ -176,7 +177,23 @@ internal sealed class DialogDragBehavior : Behavior<Grid>
         {
             return;
         }
-        
+
+        if (sender is Grid grid && grid.GetVisualDescendants().OfType<ScrollViewer>().FirstOrDefault() is
+                { } scrollViewer)
+        {
+            var scrollViewerDelta = currentPos.Y - _lastDrag.Y;
+            if (scrollViewer.Offset.Y > 0 || scrollViewerDelta < 0)
+            {
+                e.Pointer.Capture(null);
+                if (translate.Y > 0)
+                {
+                    _dialog.IsOpen = true;
+                }
+
+                return;
+            }
+        }
+
         if (deltaY < 0)
         {
             return;

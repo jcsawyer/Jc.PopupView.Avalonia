@@ -5,6 +5,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <MergeResourceInclude Source="/ControlThemes/DialogHost.axaml" />
                 <MergeResourceInclude Source="/ControlThemes/Sheet.axaml" />
+                <MergeResourceInclude Source="/ControlThemes/Toast.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Styles.Resources>

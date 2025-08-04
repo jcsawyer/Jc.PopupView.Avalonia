@@ -5,6 +5,7 @@
              xmlns:vm="clr-namespace:Jc.PopupView.Avalonia.Sample.ViewModels"
              xmlns:popup="https://github.com/jcsawyer"
              xmlns:sheets="clr-namespace:Jc.PopupView.Avalonia.Sample.Views.Sheets"
+             xmlns:toasts="clr-namespace:Jc.PopupView.Avalonia.Sample.Views.Toasts"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Jc.PopupView.Avalonia.Sample.Views.MainView"
              x:DataType="vm:MainViewModel"
@@ -101,7 +102,7 @@
                             <Border Grid.Column="0" Classes="icon">
                                 <Grid RowDefinitions="*, Auto">
                                     <Border HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="10"
-                                            CornerRadius="5 5 3 3" />
+                                            CornerRadius="10 10 3 3" />
                                 </Grid>
                             </Border>
                             <Grid Grid.Column="1" RowDefinitions="Auto, Auto" ColumnDefinitions="*"
@@ -123,19 +124,19 @@
                             <Border Grid.Column="0" Classes="icon">
                                 <Grid RowDefinitions="*, Auto">
                                     <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="10"
-                                            CornerRadius="3 3 5 5 " />
+                                            CornerRadius="3 3 10 10 " />
                                 </Grid>
                             </Border>
                             <Grid Grid.Column="1" RowDefinitions="Auto, Auto" ColumnDefinitions="*"
                                   VerticalAlignment="Center">
                                 <TextBlock Grid.Row="0" Classes="h2" Text="Bottom version 1" />
                                 <TextBlock Grid.Row="1" Classes="p"
-                                           Text="A toast notification at the bottom that requires interaction." />
+                                           Text="A toast notification at the bottom." />
                             </Grid>
                         </Grid>
                     </Button>
                     <!-- Toast Bottom 2 -->
-                    <Button Classes="panel" Command="{Binding OpenToast2Command}">
+                    <Button Classes="panel" Command="{Binding OpenToast3Command}">
                         <Button.Transitions>
                             <Transitions>
                                 <DoubleTransition Property="Opacity" Duration="0:0:0.1"></DoubleTransition>
@@ -145,27 +146,74 @@
                             <Border Grid.Column="0" Classes="icon">
                                 <Grid RowDefinitions="*, Auto">
                                     <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="10"
-                                            CornerRadius="3 3 5 5 " />
+                                            CornerRadius="3 3 10 10 " />
                                 </Grid>
                             </Border>
                             <Grid Grid.Column="1" RowDefinitions="Auto, Auto" ColumnDefinitions="*"
                                   VerticalAlignment="Center">
                                 <TextBlock Grid.Row="0" Classes="h2" Text="Bottom version 2" />
                                 <TextBlock Grid.Row="1" Classes="p"
-                                           Text="A toast notification at the bottom with an image." />
+                                           Text="A toast notification at the bottom that requires interaction." />
+                            </Grid>
+                        </Grid>
+                    </Button>
+                    <!-- Toast Bottom 3 -->
+                    <Button Classes="panel" Command="{Binding OpenToast4Command}">
+                        <Button.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity" Duration="0:0:0.1"></DoubleTransition>
+                            </Transitions>
+                        </Button.Transitions>
+                        <Grid ColumnSpacing="20" RowSpacing="10" ColumnDefinitions="Auto, *">
+                            <Border Grid.Column="0" Classes="icon">
+                                <Grid RowDefinitions="*, Auto">
+                                    <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="10"
+                                            CornerRadius="3 3 10 10 " />
+                                </Grid>
+                            </Border>
+                            <Grid Grid.Column="1" RowDefinitions="Auto, Auto" ColumnDefinitions="*"
+                                  VerticalAlignment="Center">
+                                <TextBlock Grid.Row="0" Classes="h2" Text="Bottom version 3" />
+                                <TextBlock Grid.Row="1" Classes="p"
+                                           Text="A toast notification loaded dynamically." />
                             </Grid>
                         </Grid>
                     </Button>
                 </StackPanel>
             </ScrollViewer>
             <popup:DialogHost.Sheets>
-                <popup:Sheet IsOpen="{Binding IsSheet1Open, Mode=TwoWay}" ClickOutsideToDismiss="True">
+                <popup:Sheet IsOpen="{Binding IsSheet1Open}" ClickOutsideToDismiss="True" ShowBackgroundMask="False">
                     <sheets:Sheet1 />
                 </popup:Sheet>
-                <popup:Sheet IsOpen="{Binding IsSheet2Open, Mode=TwoWay}" PillLocation="External">
+                <popup:Sheet IsOpen="{Binding IsSheet2Open}" PillLocation="External">
                     <sheets:Sheet1 />
                 </popup:Sheet>
             </popup:DialogHost.Sheets>
+            <popup:DialogHost.Toasts>
+                <popup:Toast
+                    IsOpen="{Binding IsToast1Open}"
+                    Background="#fe504e"
+                    Foreground="#ffffff">
+                    <toasts:Toast1 />
+                </popup:Toast>
+                <popup:Toast
+                    IsOpen="{Binding IsToast2Open}"
+                    Location="Bottom"
+                    Background="#fe504e"
+                    Foreground="#ffffff">
+                    <toasts:Toast1 />
+                </popup:Toast>
+                <popup:Toast
+                    IsOpen="{Binding IsToast3Open}"
+                    Background="#f5f5f5"
+                    Foreground="#000000"
+                    ShowBackgroundMask="True"
+                    Location="Bottom"
+                    ClickOutsideToDismiss="False"
+                    ClickToDismiss="False">
+                    <toasts:Toast2 />
+                </popup:Toast>
+            </popup:DialogHost.Toasts>
         </popup:DialogHost>
     </Grid>
 </UserControl>
