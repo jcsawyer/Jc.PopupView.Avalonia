@@ -61,7 +61,7 @@ public class Toast : DialogBase
         set => SetValue(ShowBackgroundMaskProperty, value);
     }
 
-    public new static readonly StyledProperty<bool> ClickToDismissProperty = AvaloniaProperty.Register<Toast, bool>(
+    public static readonly StyledProperty<bool> ClickToDismissProperty = AvaloniaProperty.Register<Toast, bool>(
         nameof(ClickToDismiss), defaultValue: true);
 
     public override bool ClickToDismiss

@@ -26,10 +26,10 @@ public class Sheet : DialogBase
     private double _endY;
     private bool _isAnimating;
 
-    public static readonly StyledProperty<TimeSpan> AnimationDurationProperty = AvaloniaProperty.Register<Sheet, TimeSpan>(
+    public new static readonly StyledProperty<TimeSpan> AnimationDurationProperty = AvaloniaProperty.Register<Sheet, TimeSpan>(
         nameof(AnimationDuration), defaultValue: TimeSpan.FromMilliseconds(500));
 
-    public TimeSpan AnimationDuration
+    public new TimeSpan AnimationDuration
     {
         get => GetValue(AnimationDurationProperty);
         set => SetValue(AnimationDurationProperty, value);
