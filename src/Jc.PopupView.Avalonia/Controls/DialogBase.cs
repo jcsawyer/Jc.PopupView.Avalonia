@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Media;
@@ -22,7 +23,7 @@ public abstract class DialogBase : TemplatedControl, IDialog
     
     public static readonly StyledProperty<TimeSpan> AnimationDurationProperty =
         AvaloniaProperty.Register<Sheet, TimeSpan>(
-            nameof(AnimationDuration), defaultValue: TimeSpan.FromSeconds(0.2));
+            nameof(AnimationDuration), defaultValue: TimeSpan.FromMilliseconds(200));
 
     public virtual TimeSpan AnimationDuration
     {
@@ -30,6 +31,14 @@ public abstract class DialogBase : TemplatedControl, IDialog
         set => SetValue(AnimationDurationProperty, value);
     }
     
+    public static readonly StyledProperty<Easing> EasingProperty = AvaloniaProperty.Register<Toast, Easing>(
+        nameof(Easing), defaultValue: new CubicEaseOut());
+
+    public Easing Easing
+    {
+        get => GetValue(EasingProperty);
+        set => SetValue(EasingProperty, value);
+    }
     
     public static readonly StyledProperty<bool> CloseOnClickOutsideProperty = AvaloniaProperty.Register<Sheet, bool>(
         nameof(ClickOutsideToDismiss));

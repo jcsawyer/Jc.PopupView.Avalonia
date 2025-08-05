@@ -84,6 +84,7 @@ Common popup properties to be configured:
 | --- | --- | --- |
 | IsOpen | false | Whether the popup is open - setting this value triggers animations |
 | AnimationDuration | 0:0:0.2 | Popup animation duration |
+| Easing | CubicEaseOut | Animation easing function |
 | ClickOnOutsideToDismiss | false | Clicking outside the popup closes the popup |
 | ClickToDismiss | false | Clicking the popup itself closes the popup |
 | ShowBackgroundMask | true | Shows the popup background mask |
@@ -121,6 +122,7 @@ Sheets can be configured as:
 
 | Property | Default | Description |
 | --- | --- | --- |
+| AnimationDuration | 0:0:0.5 | Popup animation duration |
 | ClickToDismiss | false | Attempting to set this on a sheet results in an invalid operation exception |
 | PillLocation | Internal | Location of the drag indicator pill (Internal or External) |
 | PillColor | | The color of the drag indicator pill |

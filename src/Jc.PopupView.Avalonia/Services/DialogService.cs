@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Threading;
 using Jc.PopupView.Avalonia.Controls;
 
 namespace Jc.PopupView.Avalonia.Services;
@@ -12,9 +13,10 @@ public sealed class DialogService : IDialogService
         configure?.Invoke(sheet);
         sheet.Content = content;
         sheet.DetachOnClose = true;
-        sheet.AttachedToVisualTree += (_, _) =>
+        sheet.Loaded += (_, _) =>
         {
-            sheet.IsOpen = true;
+            // Delay to next layout cycle to ensure the control is fully loaded
+            Dispatcher.UIThread.Post(() => { sheet.IsOpen = true; }, DispatcherPriority.Loaded);
         };
         dialogHost.Sheets.Add(sheet);
     }
@@ -31,13 +33,14 @@ public sealed class DialogService : IDialogService
         var dialogHost = DialogHost.GetDialogHost();
         var toast = new Toast();
         configure?.Invoke(toast);
-        
+
         toast.Content = content;
         toast.DetachOnClose = true;
-        
-        toast.AttachedToVisualTree += (_, _) =>
+
+        toast.Loaded += (_, _) =>
         {
-            toast.IsOpen = true;
+            // Delay to next layout cycle to ensure the control is fully loaded
+            Dispatcher.UIThread.Post(() => { toast.IsOpen = true; }, DispatcherPriority.Loaded);
         };
         dialogHost.Toasts.Add(toast);
     }

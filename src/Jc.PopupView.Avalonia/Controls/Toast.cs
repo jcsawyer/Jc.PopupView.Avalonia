@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using Avalonia;
+using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
@@ -15,12 +17,15 @@ namespace Jc.PopupView.Avalonia.Controls;
 public class Toast : DialogBase
 {
     private readonly DispatcherTimer _animationTimer;
+    private readonly Stopwatch _animationStopwatch = new();
     private readonly TimeSpan AnimationFramerate = TimeSpan.FromMicroseconds(16);
+    
     private Border? _toastPart;
     private Rectangle? _maskPart;
-
-    private int AnimationTotalTicks => (int)(AnimationDuration.TotalSeconds / AnimationFramerate.TotalSeconds);
-
+    
+    private double _startY;
+    private double _endY;
+    private bool _isAnimating;
 
     internal bool DetachOnClose { get; set; }
 
@@ -32,27 +37,15 @@ public class Toast : DialogBase
         get => GetValue(IsOpenProperty);
         set
         {
-            if (value)
-            {
-                if (IsOpening)
-                {
-                    return;
-                }
+            if (_toastPart?.RenderTransform is not TranslateTransform transform)
+                return;
 
-                IsOpening = true;
-                IsClosing = false;
-            }
-            else
-            {
-                if (IsClosing)
-                {
-                    return;
-                }
+            CalculateAnimationStartEnd(value);
 
-                IsOpening = false;
-                IsClosing = true;
-            }
+            IsOpening = value;
+            IsClosing = !value;
 
+            _animationStopwatch.Restart();
             UpdatePseudoClasses();
             _animationTimer.Start();
             SetValue(IsOpenProperty, value);
@@ -101,27 +94,15 @@ public class Toast : DialogBase
         {
             if (e.NewValue is bool isOpen)
             {
-                if (isOpen)
-                {
-                    if (toast.IsOpening)
-                    {
-                        return;
-                    }
+                if (toast._toastPart?.RenderTransform is not TranslateTransform transform)
+                    return;
 
-                    toast.IsOpening = true;
-                    toast.IsClosing = false;
-                }
-                else
-                {
-                    if (toast.IsClosing)
-                    {
-                        return;
-                    }
+                toast.CalculateAnimationStartEnd(isOpen);
+                
+                toast.IsOpening = isOpen;
+                toast.IsClosing = !isOpen;
 
-                    toast.IsOpening = false;
-                    toast.IsClosing = true;
-                }
-
+                toast._animationStopwatch.Restart();
                 toast.UpdatePseudoClasses();
                 toast._animationTimer.Start();
             }
@@ -135,7 +116,6 @@ public class Toast : DialogBase
 
         _toastPart = e.NameScope.Find<Border>("PART_ToastContent");
         _maskPart = e.NameScope.Find<Rectangle>("PART_ToastMask");
-        var test = _toastPart.GetTransformedBounds()?.Bounds.Height ?? 0;
         _maskPart?.AddHandler(PointerPressedEvent, (_, _) =>
         {
             // TODO fix this when mask is not visible
@@ -165,142 +145,76 @@ public class Toast : DialogBase
 
     protected override void OnUnloaded(RoutedEventArgs e)
     {
-        _animationTimer.Tick -= AnimateFrame;
         base.OnUnloaded(e);
+        _animationTimer.Tick -= AnimateFrame;
+        _animationStopwatch.Reset();
     }
 
     private void AnimateFrame(object? sender, EventArgs e)
     {
-        if (_toastPart?.RenderTransform is not TranslateTransform)
+        if (_toastPart?.RenderTransform is not TranslateTransform transform)
         {
             _animationTimer.Stop();
+            _animationStopwatch.Stop();
             return;
         }
 
-        var toastHeight = _toastPart.GetTransformedBounds()?.Bounds.Height ?? 0;
-        if (IsOpen)
-        {
-            if (_toastPart.RenderTransform is not TranslateTransform transform)
-            {
-                _animationTimer.Stop();
-                return;
-            }
+        var progress = _animationStopwatch.Elapsed.TotalMilliseconds / AnimationDuration.TotalMilliseconds;
+        progress = Math.Clamp(progress, 0, 1);
+        
+        var easedProgress = Easing.Ease(progress);
 
-            if (Location == ToastLocation.Bottom)
+        transform.Y = _startY + (_endY - _startY) * easedProgress;
+
+        if (progress >= 1)
+        {
+            _animationTimer.Stop();
+            _animationStopwatch.Stop();
+
+            transform.Y = _endY;
+
+            if (_isAnimating)
             {
-                if (transform.Y > 0)
-                {
-                    transform.Y -= toastHeight / AnimationTotalTicks;
-                    if (transform.Y <= 0)
-                    {
-                        transform.Y = 0;
-                        _animationTimer.Stop();
-                        if (IsOpening)
-                        {
-                            //DialogManager.OnToastOpened?.Invoke(this, EventArgs.Empty);
-                            IsOpening = false;
-                            UpdatePseudoClasses();
-                        }
-                    }
-                }
-                else
-                {
-                    _animationTimer.Stop();
-                }
-            }
-            else if (Location == ToastLocation.Top)
-            {
-                if (transform.Y < 0)
-                {
-                    transform.Y += toastHeight / AnimationTotalTicks;
-                    if (transform.Y >= 0)
-                    {
-                        transform.Y = 0;
-                        _animationTimer.Stop();
-                        if (IsOpening)
-                        {
-                            //DialogManager.OnToastOpened?.Invoke(this, EventArgs.Empty);
-                            IsOpening = false;
-                            UpdatePseudoClasses();
-                        }
-                    }
-                }
-                else
-                {
-                    _animationTimer.Stop();
-                }
+                IsOpening = false;
             }
             else
             {
-                _animationTimer.Stop();
-            }
-        }
-        else if (!IsOpen)
-        {
-            if (_toastPart.RenderTransform is not TranslateTransform transform)
-            {
-                _animationTimer.Stop();
-                return;
+                IsClosing = false;
+
+                if (DetachOnClose)
+                {
+                    var host = DialogHost.GetDialogHost();
+                    host.Toasts.Remove(this);
+                }
             }
 
-            if (Location == ToastLocation.Bottom)
-            {
-                if (transform.Y < toastHeight)
-                {
-                    transform.Y += toastHeight / AnimationTotalTicks;
-                    if (transform.Y > toastHeight)
-                    {
-                        transform.Y = toastHeight;
-                        _animationTimer.Stop();
-                        if (IsClosing)
-                        {
-                            //DialogManager.OnToastClosed?.Invoke(this, EventArgs.Empty);
-                            IsClosing = false;
-                            UpdatePseudoClasses();
-                            if (DetachOnClose)
-                            {
-                                var host = DialogHost.GetDialogHost();
-                                host.Toasts.Remove(this);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    _animationTimer.Stop();
-                }
-            }
-            else if (Location == ToastLocation.Top)
-            {
-                if (transform.Y > -toastHeight)
-                {
-                    transform.Y -= toastHeight / AnimationTotalTicks;
-                    if (transform.Y < -toastHeight)
-                    {
-                        transform.Y = -toastHeight;
-                        _animationTimer.Stop();
-                        if (IsClosing)
-                        {
-                            //DialogManager.OnToastClosed?.Invoke(this, EventArgs.Empty);
-                            IsClosing = false;
-                            UpdatePseudoClasses();
-                            if (DetachOnClose)
-                            {
-                                var host = DialogHost.GetDialogHost();
-                                host.Toasts.Remove(this);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    _animationTimer.Stop();
-                }
-            }
-            else
-            {
-                _animationTimer.Stop();
-            }
+            UpdatePseudoClasses();
         }
+    }
+    
+    private void CalculateAnimationStartEnd(bool opening)
+    {
+        if (_toastPart?.RenderTransform is not TranslateTransform transform)
+            return;
+
+        var height = _toastPart.GetTransformedBounds()?.Bounds.Height ?? 0;
+
+        if (Location == ToastLocation.Top)
+        {
+            _startY = opening ? -height : 0;
+            _endY = opening ? 0 : -height;
+        }
+        else // Bottom
+        {
+            _startY = opening ? height : 0;
+            _endY = opening ? 0 : height;
+        }
+
+        _isAnimating = opening;
+    }
+    
+    private static double EaseOutCubic(double t)
+    {
+        return 1 - Math.Pow(1 - t, 3);
     }
 }

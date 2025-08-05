@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
@@ -15,11 +16,26 @@ namespace Jc.PopupView.Avalonia.Controls;
 public class Sheet : DialogBase
 {
     private readonly DispatcherTimer _animationTimer;
-    private static readonly TimeSpan AnimationFramerate = TimeSpan.FromMicroseconds(16);
+    private readonly Stopwatch _animationStopwatch = new();
+    private static readonly TimeSpan AnimationFramerate = TimeSpan.FromMilliseconds(16); // ~60fps
+
     private Grid? _sheetPart;
     private Rectangle? _maskPart;
 
-    internal bool DetachOnClose { get; set;  }
+    private double _startY;
+    private double _endY;
+    private bool _isAnimating;
+
+    public static readonly StyledProperty<TimeSpan> AnimationDurationProperty = AvaloniaProperty.Register<Sheet, TimeSpan>(
+        nameof(AnimationDuration), defaultValue: TimeSpan.FromMilliseconds(500));
+
+    public TimeSpan AnimationDuration
+    {
+        get => GetValue(AnimationDurationProperty);
+        set => SetValue(AnimationDurationProperty, value);
+    }
+
+    internal bool DetachOnClose { get; set; }
 
     public override bool ClickToDismiss
     {
@@ -27,36 +43,26 @@ public class Sheet : DialogBase
         set => throw new InvalidOperationException($"Cannot set close on click for Sheet. Use {nameof(ClickOutsideToDismiss)} instead.");
     }
 
-    private int AnimationTotalTicks => (int)(AnimationDuration.TotalSeconds / AnimationFramerate.TotalSeconds);
-
-    
     public new static readonly StyledProperty<bool> IsOpenProperty = AvaloniaProperty.Register<Sheet, bool>(
         nameof(IsOpen), defaultBindingMode: BindingMode.TwoWay);
-    
+
     public override bool IsOpen
     {
         get => GetValue(IsOpenProperty);
         set
         {
-            if (value)
-            {
-                if (IsOpening)
-                {
-                    return;
-                }
-                IsOpening = true;
-                IsClosing = false;
-            }
-            else
-            {
-                if (IsClosing)
-                {
-                    return;
-                }
-                IsOpening = false;
-                IsClosing = true;
-            }
+            if (_sheetPart?.RenderTransform is not TranslateTransform transform)
+                return;
 
+            var sheetHeight = _sheetPart.GetTransformedBounds()?.Bounds.Height ?? 0;
+            _startY = transform.Y;
+            _endY = value ? 0 : sheetHeight;
+            _isAnimating = value;
+
+            IsOpening = value;
+            IsClosing = !value;
+
+            _animationStopwatch.Restart();
             UpdatePseudoClasses();
             _animationTimer.Start();
             SetValue(IsOpenProperty, value);
@@ -81,8 +87,7 @@ public class Sheet : DialogBase
         get => GetValue(PillColorProperty);
         set => SetValue(PillColorProperty, value);
     }
-    
-    
+
     public Sheet()
     {
         _animationTimer = new DispatcherTimer()
@@ -90,32 +95,25 @@ public class Sheet : DialogBase
             Interval = AnimationFramerate,
         };
     }
-
+    
     static Sheet()
     {
         IsOpenProperty.Changed.AddClassHandler<Sheet>((sheet, e) =>
         {
             if (e.NewValue is bool isOpen)
             {
-                if (isOpen)
-                {
-                    if (sheet.IsOpening)
-                    {
-                        return;
-                    }
-                    sheet.IsOpening = true;
-                    sheet.IsClosing = false;
-                }
-                else
-                {
-                    if (sheet.IsClosing)
-                    {
-                        return;
-                    }
-                    sheet.IsOpening = false;
-                    sheet.IsClosing = true;
-                }
+                if (sheet._sheetPart?.RenderTransform is not TranslateTransform transform)
+                    return;
 
+                var sheetHeight = sheet._sheetPart.GetTransformedBounds()?.Bounds.Height ?? 0;
+                sheet._startY = transform.Y;
+                sheet._endY = isOpen ? 0 : sheetHeight;
+                sheet._isAnimating = isOpen;
+
+                sheet.IsOpening = isOpen;
+                sheet.IsClosing = !isOpen;
+
+                sheet._animationStopwatch.Restart();
                 sheet.UpdatePseudoClasses();
                 sheet._animationTimer.Start();
             }
@@ -129,6 +127,7 @@ public class Sheet : DialogBase
 
         _sheetPart = e.NameScope.Find<Grid>("PART_Sheet");
         _maskPart = e.NameScope.Find<Rectangle>("PART_SheetMask");
+
         _maskPart?.AddHandler(PointerPressedEvent, (_, _) =>
         {
             if (ClickOutsideToDismiss)
@@ -140,92 +139,61 @@ public class Sheet : DialogBase
 
     protected override void OnLoaded(RoutedEventArgs e)
     {
-        _animationTimer.Tick += AnimateFrame;
-        if (_sheetPart?.RenderTransform is TranslateTransform translateTransform)
-        {
-            _sheetPart.RenderTransform = translateTransform;
-            translateTransform.Y = _sheetPart.GetTransformedBounds()?.Bounds.Height ?? 0;
-        }
-
         base.OnLoaded(e);
+
+        _animationTimer.Tick += AnimateFrame;
+
+        if (_sheetPart?.RenderTransform is TranslateTransform transform)
+        {
+            transform.Y = _sheetPart.GetTransformedBounds()?.Bounds.Height ?? 0;
+        }
     }
 
     protected override void OnUnloaded(RoutedEventArgs e)
     {
-        _animationTimer.Tick -= AnimateFrame;
         base.OnUnloaded(e);
+        _animationTimer.Tick -= AnimateFrame;
+        _animationStopwatch.Reset();
     }
 
     private void AnimateFrame(object? sender, EventArgs e)
     {
-        if (_sheetPart?.RenderTransform is not TranslateTransform)
+        if (_sheetPart?.RenderTransform is not TranslateTransform transform)
         {
             _animationTimer.Stop();
+            _animationStopwatch.Stop();
             return;
         }
-        
-        var sheetHeight = _sheetPart.GetTransformedBounds()?.Bounds.Height ?? 0;
-        if (IsOpen)
-        {
-            if (_sheetPart.RenderTransform is not TranslateTransform transform)
-            {
-                _animationTimer.Stop();
-                return;
-            }
 
-            if (transform.Y > 0)
+        var progress = _animationStopwatch.Elapsed.TotalMilliseconds / AnimationDuration.TotalMilliseconds;
+        progress = Math.Clamp(progress, 0, 1);
+        var easedProgress = Easing.Ease(progress);
+
+        transform.Y = _startY + (_endY - _startY) * easedProgress;
+
+        if (progress >= 1)
+        {
+            _animationTimer.Stop();
+            _animationStopwatch.Stop();
+
+            transform.Y = _endY;
+
+            if (_isAnimating)
             {
-                transform.Y -= sheetHeight / AnimationTotalTicks;
-                if (transform.Y <= 0)
-                {
-                    transform.Y = 0;
-                    _animationTimer.Stop();
-                    if (IsOpening)
-                    {
-                        //DialogManager.OnSheetOpened?.Invoke(this, EventArgs.Empty);
-                        IsOpening = false;
-                        UpdatePseudoClasses();
-                    }
-                }
+                IsOpening = false;
             }
             else
             {
-                _animationTimer.Stop();
-            }
-        }
-        else if (!IsOpen)
-        {
-            if (_sheetPart.RenderTransform is not TranslateTransform transform)
-            {
-                _animationTimer.Stop();
-                return;
-            }
+                IsClosing = false;
 
-            if (transform.Y < sheetHeight)
-            {
-                transform.Y += sheetHeight / AnimationTotalTicks;
-                if (transform.Y > sheetHeight)
+                if (DetachOnClose)
                 {
-                    transform.Y = sheetHeight;
-                    _animationTimer.Stop();
-                    if (IsClosing)
-                    {
-                        //DialogManager.OnSheetClosed?.Invoke(this, EventArgs.Empty);
-                        IsClosing = false;
-                        UpdatePseudoClasses();
-                        if (DetachOnClose)
-                        {
-                            var host = DialogHost.GetDialogHost();
-                            host.Sheets.Remove(this);
-                        }
-                    }
+                    var host = DialogHost.GetDialogHost();
+                    host.Sheets.Remove(this);
                 }
             }
-            else
-            {
-                _animationTimer.Stop();
-            }
+
+            UpdatePseudoClasses();
         }
     }
-    
 }
