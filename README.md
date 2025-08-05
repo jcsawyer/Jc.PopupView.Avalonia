@@ -29,8 +29,6 @@ This includes toast popups, iOS "sheet" likes, "floaters" and regular popups des
 
 ## Usage
 
-> ***Note:** The package is currently unavailable until version 1.0 release. These are just placehodler usage docs for now - you can always clone the repo and use like that, but will not automatically receive updates for release where API may change.*
-
 ### Get Started
 
 To use Jc.PopupView.Avalonia you must add the `Jc.PopupView.Avalonia` package to your project.
