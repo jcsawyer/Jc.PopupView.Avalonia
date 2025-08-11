@@ -12,10 +12,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia.iOS" Version="11.3.2" />
+        <PackageReference Include="Avalonia.iOS" Version="11.3.3" />
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\Jc.PopupView.Avalonia.Native.iOS\Jc.PopupView.Avalonia.Native.iOS.csproj" />
         <ProjectReference Include="..\Jc.PopupView.Avalonia.Sample\Jc.PopupView.Avalonia.Sample.csproj"/>
     </ItemGroup>
 </Project>

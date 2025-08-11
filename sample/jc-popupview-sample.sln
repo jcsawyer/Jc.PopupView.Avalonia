@@ -14,6 +14,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{C1146E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jc.PopupView.Avalonia", "..\src\Jc.PopupView.Avalonia\Jc.PopupView.Avalonia.csproj", "{7B80EC0E-257D-4CF0-B374-83216B6BA7D5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jc.PopupView.Avalonia.Native", "..\src\Jc.PopupView.Avalonia.Native\Jc.PopupView.Avalonia.Native.csproj", "{92484EC6-683B-42B1-8411-852EFAEEDD35}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jc.PopupView.Avalonia.Native.iOS", "..\src\Jc.PopupView.Avalonia.Native.iOS\Jc.PopupView.Avalonia.Native.iOS.csproj", "{BEEB943B-D688-4D00-A6C7-676B6AABBA9C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jc.PopupView.Avalonia.Native.Android", "..\src\Jc.PopupView.Avalonia.Native.Android\Jc.PopupView.Avalonia.Native.Android.csproj", "{512C6E1A-2292-4013-8174-B39A5372B341}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +50,18 @@ Global
 		{7B80EC0E-257D-4CF0-B374-83216B6BA7D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B80EC0E-257D-4CF0-B374-83216B6BA7D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B80EC0E-257D-4CF0-B374-83216B6BA7D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92484EC6-683B-42B1-8411-852EFAEEDD35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92484EC6-683B-42B1-8411-852EFAEEDD35}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92484EC6-683B-42B1-8411-852EFAEEDD35}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92484EC6-683B-42B1-8411-852EFAEEDD35}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEEB943B-D688-4D00-A6C7-676B6AABBA9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEEB943B-D688-4D00-A6C7-676B6AABBA9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEEB943B-D688-4D00-A6C7-676B6AABBA9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEEB943B-D688-4D00-A6C7-676B6AABBA9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{512C6E1A-2292-4013-8174-B39A5372B341}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{512C6E1A-2292-4013-8174-B39A5372B341}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{512C6E1A-2292-4013-8174-B39A5372B341}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{512C6E1A-2292-4013-8174-B39A5372B341}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{947B6FF1-CF5D-4BAE-BC0A-9D353A715BF4} = {C1146E12-0790-4C1A-886C-36213E3FF8F1}
