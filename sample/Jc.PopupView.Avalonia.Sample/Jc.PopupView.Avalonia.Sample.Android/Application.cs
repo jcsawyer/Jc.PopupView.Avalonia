@@ -17,9 +17,8 @@ public class MainActivity : AvaloniaMainActivity<App>
 {
     protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
     {
-        App.BottomSheetService = new BottomSheetService(this);
-        
         return base.CustomizeAppBuilder(builder)
+            .UsePopupsNative(this)
             .WithInterFont()
             .UseReactiveUI();
     }

@@ -19,6 +19,7 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
         App.BottomSheetService = new BottomSheetService();
         
         return base.CustomizeAppBuilder(builder)
+            .UsePopupsNative()
             .WithInterFont()
             .UseReactiveUI();
     }

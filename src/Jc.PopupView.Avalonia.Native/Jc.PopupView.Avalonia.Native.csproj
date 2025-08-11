@@ -7,6 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <InternalsVisibleTo Include="Jc.PopupView.Avalonia.Native.Android" />
+        <InternalsVisibleTo Include="Jc.PopupView.Avalonia.Native.iOS" />
+    </ItemGroup>
+    
+    <ItemGroup>
       <PackageReference Include="Avalonia" Version="11.3.3" />
     </ItemGroup>
 
