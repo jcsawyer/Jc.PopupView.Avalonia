@@ -9,8 +9,6 @@ namespace Jc.PopupView.Avalonia.Sample;
 
 public partial class App : Application
 {
-    public static IBottomSheetService? BottomSheetService { get; set; }
-    
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);

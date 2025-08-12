@@ -2,6 +2,12 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jc.PopupView.Avalonia", "src\Jc.PopupView.Avalonia\Jc.PopupView.Avalonia.csproj", "{EB12567B-E904-4702-BF80-1A9D442D310A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jc.PopupView.Avalonia.Native", "src\Jc.PopupView.Avalonia.Native\Jc.PopupView.Avalonia.Native.csproj", "{4CA63730-AA04-45E8-8B1F-E65FFCAB4F3E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jc.PopupView.Avalonia.Native.Android", "src\Jc.PopupView.Avalonia.Native.Android\Jc.PopupView.Avalonia.Native.Android.csproj", "{E4178C50-6BBD-4D59-BE1B-866C220176AC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jc.PopupView.Avalonia.Native.iOS", "src\Jc.PopupView.Avalonia.Native.iOS\Jc.PopupView.Avalonia.Native.iOS.csproj", "{E793E000-F1BE-4050-A3FF-1F566C06929E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +18,17 @@ Global
 		{EB12567B-E904-4702-BF80-1A9D442D310A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB12567B-E904-4702-BF80-1A9D442D310A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB12567B-E904-4702-BF80-1A9D442D310A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CA63730-AA04-45E8-8B1F-E65FFCAB4F3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CA63730-AA04-45E8-8B1F-E65FFCAB4F3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CA63730-AA04-45E8-8B1F-E65FFCAB4F3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CA63730-AA04-45E8-8B1F-E65FFCAB4F3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4178C50-6BBD-4D59-BE1B-866C220176AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4178C50-6BBD-4D59-BE1B-866C220176AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4178C50-6BBD-4D59-BE1B-866C220176AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4178C50-6BBD-4D59-BE1B-866C220176AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E793E000-F1BE-4050-A3FF-1F566C06929E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E793E000-F1BE-4050-A3FF-1F566C06929E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E793E000-F1BE-4050-A3FF-1F566C06929E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E793E000-F1BE-4050-A3FF-1F566C06929E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
