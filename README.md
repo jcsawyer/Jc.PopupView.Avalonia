@@ -12,6 +12,7 @@ Beautiful, animinated toasts, alerts, and other popups for Avalonia UI.
     - [Get Started](#get-started)
     - [Native](#native)
       - [Platform Support](#platform-support)
+      - [Screenshots](#native-screenshots)
     - [Dialog Service](#dialog-service)
     - [Common](#common)
     - [Toasts](#toasts)
@@ -21,7 +22,7 @@ Beautiful, animinated toasts, alerts, and other popups for Avalonia UI.
 
 | Toasts | Sheets | Floaters | Popups |
 | --- | --- | --- | --- |
-| <img src="media/toasts.gif" /> | <img src="media/sheets.gif" /> | Coming soon | Cooming soon |
+| <img src="media/toasts.gif" style="max-width: 250px" /> | <img src="media/sheets.gif" style="max-width: 250px" /> | Coming soon | Cooming soon |
 
 ## Introduction
 
@@ -88,6 +89,13 @@ Native.Current.BottomSheetService.ShowBottomSheet(new TextBlock { Text = "Hello,
 | Android | ✓ |
 | Desktop | ☓ |
 | iOS | ✓ |
+
+#### Native Screenshots
+
+|  | Android | iOS |
+| --- | --- | --- |
+| Bottom Sheets | <img src="media/Native Bottom Sheet Android.gif" style="max-width: 250px"  /> | <img src="media/Native Bottom Sheet iOS.gif" style="max-width: 250px"  /> |
+
 
 ### Dialog Service
 
