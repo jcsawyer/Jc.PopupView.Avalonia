@@ -61,7 +61,7 @@ public class MainViewModel : ViewModelBase
         OpenSheet2Command = ReactiveCommand.Create(() => IsSheet2Open = true);
         OpenSheet3Command = ReactiveCommand.Create(() => new DialogService().OpenSheet(new TextBlock { Text = "Hello, from dynamic dialog!" }));
         OpenNativeSheet1Command = ReactiveCommand.Create(() =>
-            App.BottomSheetService?.ShowBottomSheet(new TextBlock { Text = "Hello, from native bottom sheet!" }));
+            Native.BottomSheetService.Current?.ShowBottomSheet(new TextBlock { Text = "Hello, from native bottom sheet!" }));
         OpenToast1Command = ReactiveCommand.Create(() => IsToast1Open = true);
         OpenToast2Command = ReactiveCommand.Create(() => IsToast2Open = true);
         OpenToast3Command = ReactiveCommand.Create(() => IsToast3Open = true);
