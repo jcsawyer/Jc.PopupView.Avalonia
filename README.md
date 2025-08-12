@@ -10,6 +10,8 @@ Beautiful, animinated toasts, alerts, and other popups for Avalonia UI.
 - [Introduction](#introduction)
 - [Usage](#usage)
     - [Get Started](#get-started)
+    - [Native](#native)
+      - [Platform Support](#platform-support)
     - [Dialog Service](#dialog-service)
     - [Common](#common)
     - [Toasts](#toasts)
@@ -54,6 +56,39 @@ Add a `DialogHost` control to the root of your application:
 </popup:DialogHost>
 ```
 
+### Native
+
+> **Note:** The native API is in still in preview and subject to change.
+
+To use native dialogs you must add the `Jc.PopupView.Avalonia.Native` package to your project.
+
+```bash
+dotnet add package Jc.PopupView.Avalonia.Native
+```
+
+and the `Jc.PopupView.Avalonia.Native.X` package to your platform speciifc project(s).
+
+```bash
+dotnet add package Jc.PopupView.Avalonia.Native.Android
+dotnet add package Jc.PopupView.Avalonia.Native.iOS
+```
+
+Then call `UseNativePopups()` on your `AppBuilder`, passing `this` context in for Android.
+
+You can then use `Native.BottomSheetService.Current` to open a native dialog:
+
+```csharp
+Native.Current.BottomSheetService.ShowBottomSheet(new TextBlock { Text = "Hello, from native bottom sheet!" });
+```
+
+#### Platform Support
+
+| Platform | Bottom Sheet |
+| ---|---|
+| Android | ✓ |
+| Desktop | ☓ |
+| iOS | ✓ |
+
 ### Dialog Service
 
 The dialog service implements the interface `IDialogService`:
@@ -63,11 +98,11 @@ public interface IDialogService
 {
     void OpenSheet<TContent>(TContent content, Action<Sheet>? configure = null)
         where TContent : Control;
-    void CloseSheet<TContent>(TContent content) 
+    void CloseSheet<TContent>(TContent content)
         where TContent : Control;
-    void OpenToast<TContent>(TContent content, Action<Toast>? configure = null) 
+    void OpenToast<TContent>(TContent content, Action<Toast>? configure = null)
         where TContent : Control;
-    void CloseToast<TContent>(TContent content) 
+    void CloseToast<TContent>(TContent content)
         where TContent : Control;
 }
 ```

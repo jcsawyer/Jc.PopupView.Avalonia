@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Jc.PopupView.Avalonia.Native;
 using Jc.PopupView.Avalonia.Sample.ViewModels;
 using Jc.PopupView.Avalonia.Sample.Views;
 
@@ -8,6 +9,8 @@ namespace Jc.PopupView.Avalonia.Sample;
 
 public partial class App : Application
 {
+    public static IBottomSheetService? BottomSheetService { get; set; }
+    
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);

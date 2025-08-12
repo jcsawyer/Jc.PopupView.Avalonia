@@ -1,10 +1,8 @@
 using Foundation;
-using UIKit;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.iOS;
-using Avalonia.Media;
 using Avalonia.ReactiveUI;
+using Jc.PopupView.Avalonia.Native.iOS;
 
 namespace Jc.PopupView.Avalonia.Sample.iOS;
 
@@ -18,7 +16,10 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
 {
     protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
     {
+        App.BottomSheetService = new BottomSheetService();
+        
         return base.CustomizeAppBuilder(builder)
+            .UsePopupsNative()
             .WithInterFont()
             .UseReactiveUI();
     }

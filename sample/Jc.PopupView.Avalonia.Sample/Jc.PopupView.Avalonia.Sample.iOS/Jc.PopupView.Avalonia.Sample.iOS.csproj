@@ -16,6 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\..\src\Jc.PopupView.Avalonia.Native.iOS\Jc.PopupView.Avalonia.Native.iOS.csproj" />
         <ProjectReference Include="..\Jc.PopupView.Avalonia.Sample\Jc.PopupView.Avalonia.Sample.csproj"/>
     </ItemGroup>
 </Project>

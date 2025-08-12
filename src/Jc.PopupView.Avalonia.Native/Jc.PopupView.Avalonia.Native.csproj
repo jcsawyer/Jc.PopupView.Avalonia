@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Jc.PopupView.Avalonia.Native.Android" />
+        <InternalsVisibleTo Include="Jc.PopupView.Avalonia.Native.iOS" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <PackageReference Include="Avalonia" Version="11.3.3" />
+    </ItemGroup>
+
+</Project>

@@ -23,6 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\..\src\Jc.PopupView.Avalonia.Native.Android\Jc.PopupView.Avalonia.Native.Android.csproj" />
         <ProjectReference Include="..\Jc.PopupView.Avalonia.Sample\Jc.PopupView.Avalonia.Sample.csproj"/>
     </ItemGroup>
 </Project>
