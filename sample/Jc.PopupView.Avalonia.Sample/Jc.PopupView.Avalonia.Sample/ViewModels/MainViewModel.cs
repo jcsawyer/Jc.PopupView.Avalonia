@@ -54,6 +54,30 @@ public class MainViewModel : ViewModelBase
     public ICommand OpenToast3Command { get; }
     
     public ICommand OpenToast4Command { get; }
+    
+    private bool _isFloater1Open;
+    public bool IsFloater1Open
+    {
+        get => _isFloater1Open;
+        set => this.RaiseAndSetIfChanged(ref _isFloater1Open, value);
+    }
+    public ICommand OpenFloater1Command { get; }
+    
+    private bool _isFloater2Open;
+    public bool IsFloater2Open
+    {
+        get => _isFloater2Open;
+        set => this.RaiseAndSetIfChanged(ref _isFloater2Open, value);
+    }
+    public ICommand OpenFloater2Command { get; }
+    
+    private bool _isFloater3Open;
+    public bool IsFloater3Open
+    {
+        get => _isFloater3Open;
+        set => this.RaiseAndSetIfChanged(ref _isFloater3Open, value);
+    }
+    public ICommand OpenFloater3Command { get; }
 
     public MainViewModel()
     {
@@ -66,5 +90,8 @@ public class MainViewModel : ViewModelBase
         OpenToast2Command = ReactiveCommand.Create(() => IsToast2Open = true);
         OpenToast3Command = ReactiveCommand.Create(() => IsToast3Open = true);
         OpenToast4Command = ReactiveCommand.Create(() => new DialogService().OpenToast(new TextBlock { Text = "Hello, from dynamic dialog!", Padding = new Thickness(10)}, toast => toast.Location = ToastLocation.Bottom));
+        OpenFloater1Command = ReactiveCommand.Create(() => IsFloater1Open = true);
+        OpenFloater2Command = ReactiveCommand.Create(() => IsFloater2Open = true);
+        OpenFloater3Command = ReactiveCommand.Create(() => IsFloater3Open = true);
     }
 }

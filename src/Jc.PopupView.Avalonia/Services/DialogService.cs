@@ -51,4 +51,28 @@ public sealed class DialogService : IDialogService
         var toast = dialogHost.Toasts.FirstOrDefault(t => Equals(t.Content, content));
         toast?.Close();
     }
+
+    public void OpenFloater<TContent>(TContent content, Action<Floater>? configure = null) where TContent : Control
+    {
+        var dialogHost = DialogHost.GetDialogHost();
+        var floater = new Floater();
+        configure?.Invoke(floater);
+        
+        floater.Content = content;
+        floater.DetachOnClose = true;
+        
+        floater.Loaded += (_, _) =>
+        {
+            // Delay to next layout cycle to ensure the control is fully loaded
+            Dispatcher.UIThread.Post(() => { floater.IsOpen = true; }, DispatcherPriority.Loaded);
+        };
+        dialogHost.Floaters.Add(floater);
+    }
+
+    public void CloseFloater<TContent>(TContent content) where TContent : Control
+    {
+        var dialogHost = DialogHost.GetDialogHost();
+        var floater = dialogHost.Floaters.FirstOrDefault(f => Equals(f.Content, content));
+        floater?.Close();
+    }
 }

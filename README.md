@@ -17,12 +17,13 @@ Beautiful, animinated toasts, alerts, and other popups for Avalonia UI.
     - [Common](#common)
     - [Toasts](#toasts)
     - [Sheets](#sheets)
+    - [Floaters](#floaters)
 
 ## Screenshots
 
 | Toasts | Sheets | Floaters | Popups |
 | --- | --- | --- | --- |
-| <img src="media/toasts.gif" style="max-width: 250px" /> | <img src="media/sheets.gif" style="max-width: 250px" /> | Coming soon | Cooming soon |
+| <img src="media/toasts.gif" /> | <img src="media/sheets.gif" /> | <img src="media/Floaters.gif" /> | Cooming soon |
 
 ## Introduction
 
@@ -112,6 +113,11 @@ public interface IDialogService
         where TContent : Control;
     void CloseToast<TContent>(TContent content)
         where TContent : Control;
+    void OpenFloater<TContent>(TContent content, Action<Floater>? configure = null)
+        where TContent : Control;
+    void CloseFloater<TContent>(TContent content)
+        where TContent : Control;
+        
 }
 ```
 
@@ -132,6 +138,9 @@ Common popup properties to be configured:
 | MaskColor | | The color of the background mask |
 
 ### Toasts
+
+Toasts are simple, edge-bound popups normally used to indicate information to the user in a non-obtrusive way.
+
 ```xml
 <popup:DialogHost.Toasts>
     <popup:Toast>
@@ -150,6 +159,9 @@ Toasts can be configured as:
 
 
 ### Sheets
+
+Sheets arise from the bottom of the screen, behaving in a stackable way. They provide a means of laying content over the top of previous content that can be dismissed via drags.
+
 ```xml
 <popup:DialogHost.Sheets>
     <!-- Sheets -->
@@ -167,3 +179,28 @@ Sheets can be configured as:
 | ClickToDismiss | false | Attempting to set this on a sheet results in an invalid operation exception |
 | PillLocation | Internal | Location of the drag indicator pill (Internal or External) |
 | PillColor | | The color of the drag indicator pill |
+
+### Floaters
+
+Floaters are similar to toasts but are not fixed to the edges of the display and so appear to "float".
+
+```xml
+<popup:DialogHost.Floaters>
+    <!-- Floaters -->
+    <popup:Floater>
+    <!-- Floter content -->
+    </popup:Floater>
+</poppDialogHost.Floaters>
+```
+
+Floaters can be configred as:
+
+| Property | Default | Description |
+| --- | --- | --- |
+| ClickToDismiss | true | Clicking the popup itself closes the popup |
+| ShowBackgroundMask | false | Shows the popup background mask |
+| Location | Top | The location the floater appears (Top or Bottom) |
+| ShadowOffsetX | 0 | The drop shadow offset along the X axis |
+| ShadowOffsetY | 5 | The drop shadow offset along the Y axis |
+| ShadowColor | #3a000000 | The drop shadow color |
+| Padding | 15 15 15 15 | The space between the floater and the end of the screen |

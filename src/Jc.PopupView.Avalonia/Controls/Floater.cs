@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using Avalonia;
-using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
@@ -14,22 +13,22 @@ using Avalonia.VisualTree;
 namespace Jc.PopupView.Avalonia.Controls;
 
 [PseudoClasses(":open", ":opening", ":closed", ":closing")]
-public class Toast : DialogBase
+public sealed class Floater : DialogBase
 {
     private readonly DispatcherTimer _animationTimer;
     private readonly Stopwatch _animationStopwatch = new();
-    private readonly TimeSpan AnimationFramerate = TimeSpan.FromMicroseconds(16);
-    
-    private Border? _toastPart;
+    private readonly TimeSpan AnimationFramerate = TimeSpan.FromMilliseconds(16);
+
+    private Border? _floaterPart;
     private Rectangle? _maskPart;
-    
+
     private double _startY;
     private double _endY;
     private bool _isAnimating;
 
     internal bool DetachOnClose { get; set; }
 
-    public new static readonly StyledProperty<bool> IsOpenProperty = AvaloniaProperty.Register<Sheet, bool>(
+    public new static readonly StyledProperty<bool> IsOpenProperty = AvaloniaProperty.Register<Floater, bool>(
         nameof(IsOpen), defaultBindingMode: BindingMode.TwoWay);
 
     public override bool IsOpen
@@ -37,7 +36,7 @@ public class Toast : DialogBase
         get => GetValue(IsOpenProperty);
         set
         {
-            if (_toastPart?.RenderTransform is not TranslateTransform transform)
+            if (_floaterPart?.RenderTransform is not TranslateTransform transform)
                 return;
 
             CalculateAnimationStartEnd(value);
@@ -61,7 +60,7 @@ public class Toast : DialogBase
         set => SetValue(ShowBackgroundMaskProperty, value);
     }
 
-    public static readonly StyledProperty<bool> ClickToDismissProperty = AvaloniaProperty.Register<Toast, bool>(
+    public static readonly StyledProperty<bool> ClickToDismissProperty = AvaloniaProperty.Register<Floater, bool>(
         nameof(ClickToDismiss), defaultValue: true);
 
     public override bool ClickToDismiss
@@ -70,26 +69,44 @@ public class Toast : DialogBase
         set => SetValue(ClickToDismissProperty, value);
     }
 
-    public static readonly StyledProperty<ToastLocation> LocationProperty =
-        AvaloniaProperty.Register<Toast, ToastLocation>(
-            nameof(Location), defaultValue: ToastLocation.Top);
+    public static readonly StyledProperty<FloaterLocation> LocationProperty =
+        AvaloniaProperty.Register<Floater, FloaterLocation>(
+            nameof(Location), defaultValue: FloaterLocation.Top);
 
-    public ToastLocation Location
+    public FloaterLocation Location
     {
         get => GetValue(LocationProperty);
         set => SetValue(LocationProperty, value);
     }
-    
-    private new static readonly StyledProperty<Thickness> PaddingProperty = AvaloniaProperty.Register<Toast, Thickness>(
-        nameof(Padding));
 
-    private new Thickness Padding
+    public static readonly StyledProperty<double> ShadowOffsetXProperty = AvaloniaProperty.Register<Floater, double>(
+        nameof(ShadowOffsetX));
+
+    public double ShadowOffsetX
     {
-        get => GetValue(PaddingProperty);
-        set => SetValue(PaddingProperty, value);
+        get => GetValue(ShadowOffsetXProperty);
+        set => SetValue(ShadowOffsetXProperty, value);
     }
 
-    public Toast()
+    public static readonly StyledProperty<double> ShadowOffsetYProperty = AvaloniaProperty.Register<Floater, double>(
+        nameof(ShadowOffsetY));
+
+    public double ShadowOffsetY
+    {
+        get => GetValue(ShadowOffsetYProperty);
+        set => SetValue(ShadowOffsetYProperty, value);
+    }
+
+    public static readonly StyledProperty<Color> ShadowColorProperty = AvaloniaProperty.Register<Floater, Color>(
+        nameof(ShadowColor));
+
+    public Color ShadowColor
+    {
+        get => GetValue(ShadowColorProperty);
+        set => SetValue(ShadowColorProperty, value);
+    }
+
+    public Floater()
     {
         _animationTimer = new DispatcherTimer()
         {
@@ -97,23 +114,23 @@ public class Toast : DialogBase
         };
     }
 
-    static Toast()
+    static Floater()
     {
-        IsOpenProperty.Changed.AddClassHandler<Toast>((toast, e) =>
+        IsOpenProperty.Changed.AddClassHandler<Floater>((floater, e) =>
         {
             if (e.NewValue is bool isOpen)
             {
-                if (toast._toastPart?.RenderTransform is not TranslateTransform transform)
+                if (floater._floaterPart?.RenderTransform is not TranslateTransform transform)
                     return;
 
-                toast.CalculateAnimationStartEnd(isOpen);
-                
-                toast.IsOpening = isOpen;
-                toast.IsClosing = !isOpen;
+                floater.CalculateAnimationStartEnd(isOpen);
 
-                toast._animationStopwatch.Restart();
-                toast.UpdatePseudoClasses();
-                toast._animationTimer.Start();
+                floater.IsOpening = isOpen;
+                floater.IsClosing = !isOpen;
+
+                floater._animationStopwatch.Restart();
+                floater.UpdatePseudoClasses();
+                floater._animationTimer.Start();
             }
         });
     }
@@ -123,8 +140,8 @@ public class Toast : DialogBase
         base.OnApplyTemplate(e);
         UpdatePseudoClasses();
 
-        _toastPart = e.NameScope.Find<Border>("PART_ToastContent");
-        _maskPart = e.NameScope.Find<Rectangle>("PART_ToastMask");
+        _floaterPart = e.NameScope.Find<Border>("PART_FloaterContent");
+        _maskPart = e.NameScope.Find<Rectangle>("PART_FloaterMask");
         _maskPart?.AddHandler(PointerPressedEvent, (_, _) =>
         {
             // TODO fix this when mask is not visible
@@ -138,13 +155,13 @@ public class Toast : DialogBase
     protected override void OnLoaded(RoutedEventArgs e)
     {
         _animationTimer.Tick += AnimateFrame;
-        if (_toastPart?.RenderTransform is TranslateTransform translateTransform)
+        if (_floaterPart?.RenderTransform is TranslateTransform translateTransform)
         {
-            _toastPart.RenderTransform = translateTransform;
+            _floaterPart.RenderTransform = translateTransform;
             translateTransform.Y = Location switch
             {
-                ToastLocation.Top => -_toastPart.GetTransformedBounds()?.Bounds.Height ?? 0,
-                ToastLocation.Bottom => _toastPart.GetTransformedBounds()?.Bounds.Height ?? 0,
+                FloaterLocation.Top => -_floaterPart.GetTransformedBounds()?.Bounds.Height ?? 0,
+                FloaterLocation.Bottom => _floaterPart.GetTransformedBounds()?.Bounds.Height ?? 0,
                 _ => 0
             };
         }
@@ -161,7 +178,7 @@ public class Toast : DialogBase
 
     private void AnimateFrame(object? sender, EventArgs e)
     {
-        if (_toastPart?.RenderTransform is not TranslateTransform transform)
+        if (_floaterPart?.RenderTransform is not TranslateTransform transform)
         {
             _animationTimer.Stop();
             _animationStopwatch.Stop();
@@ -170,7 +187,7 @@ public class Toast : DialogBase
 
         var progress = _animationStopwatch.Elapsed.TotalMilliseconds / AnimationDuration.TotalMilliseconds;
         progress = Math.Clamp(progress, 0, 1);
-        
+
         var easedProgress = Easing.Ease(progress);
 
         transform.Y = _startY + (_endY - _startY) * easedProgress;
@@ -193,22 +210,22 @@ public class Toast : DialogBase
                 if (DetachOnClose)
                 {
                     var host = DialogHost.GetDialogHost();
-                    host.Toasts.Remove(this);
+                    host.Floaters.Remove(this);
                 }
             }
 
             UpdatePseudoClasses();
         }
     }
-    
+
     private void CalculateAnimationStartEnd(bool opening)
     {
-        if (_toastPart?.RenderTransform is not TranslateTransform transform)
+        if (_floaterPart?.RenderTransform is not TranslateTransform transform)
             return;
 
-        var height = _toastPart.GetTransformedBounds()?.Bounds.Height ?? 0;
+        var height = _floaterPart.GetTransformedBounds()?.Bounds.Height ?? 0;
 
-        if (Location == ToastLocation.Top)
+        if (Location == FloaterLocation.Top)
         {
             _startY = opening ? -height : 0;
             _endY = opening ? 0 : -height;

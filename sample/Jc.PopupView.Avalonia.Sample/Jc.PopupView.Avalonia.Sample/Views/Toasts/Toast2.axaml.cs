@@ -13,6 +13,8 @@ public partial class Toast2 : UserControl
 
     private void Button_OnClick(object? sender, RoutedEventArgs e)
     {
-        new DialogService().CloseToast(this);
+        var dialogService = new DialogService();
+        dialogService.CloseToast(this);
+        dialogService.CloseFloater(this);
     }
 }

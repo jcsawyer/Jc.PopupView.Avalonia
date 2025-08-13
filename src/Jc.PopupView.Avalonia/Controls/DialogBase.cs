@@ -20,7 +20,7 @@ public abstract class DialogBase : TemplatedControl, IDialog
         get => GetValue(IsOpenProperty);
         set => SetValue(IsOpenProperty, value);
     }
-    
+
     public static readonly StyledProperty<TimeSpan> AnimationDurationProperty =
         AvaloniaProperty.Register<Sheet, TimeSpan>(
             nameof(AnimationDuration), defaultValue: TimeSpan.FromMilliseconds(200));
@@ -30,7 +30,7 @@ public abstract class DialogBase : TemplatedControl, IDialog
         get => GetValue(AnimationDurationProperty);
         set => SetValue(AnimationDurationProperty, value);
     }
-    
+
     public static readonly StyledProperty<Easing> EasingProperty = AvaloniaProperty.Register<Toast, Easing>(
         nameof(Easing), defaultValue: new CubicEaseOut());
 
@@ -39,7 +39,7 @@ public abstract class DialogBase : TemplatedControl, IDialog
         get => GetValue(EasingProperty);
         set => SetValue(EasingProperty, value);
     }
-    
+
     public static readonly StyledProperty<bool> CloseOnClickOutsideProperty = AvaloniaProperty.Register<Sheet, bool>(
         nameof(ClickOutsideToDismiss));
 
@@ -57,7 +57,7 @@ public abstract class DialogBase : TemplatedControl, IDialog
         get => GetValue(CloseOnClickProperty);
         set => SetValue(CloseOnClickProperty, value);
     }
-    
+
     public static readonly StyledProperty<bool> ShowBackgroundMaskProperty = AvaloniaProperty.Register<Sheet, bool>(
         nameof(ShowBackgroundMask), defaultValue: true);
 
@@ -66,7 +66,7 @@ public abstract class DialogBase : TemplatedControl, IDialog
         get => GetValue(ShowBackgroundMaskProperty);
         set => SetValue(ShowBackgroundMaskProperty, value);
     }
-    
+
     public static readonly StyledProperty<IBrush> MaskColorProperty = AvaloniaProperty.Register<Sheet, IBrush>(
         nameof(MaskColor));
 
@@ -75,10 +75,10 @@ public abstract class DialogBase : TemplatedControl, IDialog
         get => GetValue(MaskColorProperty);
         set => SetValue(MaskColorProperty, value);
     }
-    
+
     public static readonly StyledProperty<object?> ContentProperty = AvaloniaProperty.Register<Sheet, object?>(
         nameof(Content));
-    
+
     [Content]
     public virtual object? Content
     {
