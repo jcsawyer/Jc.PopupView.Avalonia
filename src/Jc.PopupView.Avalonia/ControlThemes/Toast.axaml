@@ -29,7 +29,6 @@
     <CornerRadius x:Key="ToastCornerRadius">0</CornerRadius>
     <system:TimeSpan x:Key="ToastAnimationDuration">0:0:0.3</system:TimeSpan>
     <SolidColorBrush x:Key="ToastMaskColor">#3a000000</SolidColorBrush>
-    <Thickness x:Key="ToastMargin">10</Thickness>
 
     <!-- Toast -->
     <ControlTheme x:Key="{x:Type controls:Toast}" TargetType="controls:Toast">
@@ -72,7 +71,6 @@
                         <Border Name="PART_ToastContent"
                                 Background="{TemplateBinding Background}"
                                 CornerRadius="{TemplateBinding CornerRadius}"
-                                Margin="{TemplateBinding Padding}"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="{TemplateBinding Location, Converter={StaticResource ToastLocationToVerticalAlignmentConverter}}">
                             <Border.Padding>

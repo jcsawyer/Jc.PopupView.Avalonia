@@ -1,0 +1,144 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="https://github.com/jcsawyer"
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                    xmlns:converters="clr-namespace:Jc.PopupView.Avalonia.Converters"
+                    xmlns:behaviors="clr-namespace:Jc.PopupView.Avalonia.Behaviors">
+    <Design.PreviewWith>
+        <Grid ColumnDefinitions="300" RowDefinitions="300">
+            <controls:DialogHost Grid.Column="0">
+                <controls:DialogHost.Floaters>
+                    <controls:Floater IsOpen="True" Location="Bottom">
+                        <TextBlock Text="This is a bottom Floater preview." />
+                    </controls:Floater>
+                    <controls:Floater IsOpen="True" Background="#fe504e" Foreground="#ffffff"
+                                      ShowBackgroundMask="False">
+                        <TextBlock Text="This is a top Floater preview." />
+                    </controls:Floater>
+                </controls:DialogHost.Floaters>
+            </controls:DialogHost>
+        </Grid>
+    </Design.PreviewWith>
+
+    <!-- Converters -->
+    <converters:FloaterLocationToVerticalAlignmentConverter x:Key="FloaterLocationToVerticalAlignmentConverter" />
+    <converters:FloaterLocationToSafeAreaConverter x:Key="FloaterLocationToSafeAreaConverter" />
+
+    <!-- Defaults -->
+    <SolidColorBrush x:Key="FloaterBackground">#f5f5f5</SolidColorBrush>
+    <SolidColorBrush x:Key="FloaterTextColor">#000000</SolidColorBrush>
+    <CornerRadius x:Key="FloaterCornerRadius">10</CornerRadius>
+    <system:TimeSpan x:Key="FloaterAnimationDuration">0:0:0.3</system:TimeSpan>
+    <SolidColorBrush x:Key="FloaterMaskColor">#3a000000</SolidColorBrush>
+    <Thickness x:Key="FloaterMargin">15</Thickness>
+    <system:Double x:Key="FloaterShadowOffsetX">0</system:Double>
+    <system:Double x:Key="FloaterShadowOffsetY">5</system:Double>
+    <Color x:Key="FloaterShadowColor">#3a000000</Color>
+
+    <!-- Floater -->
+    <ControlTheme x:Key="{x:Type controls:Floater}" TargetType="controls:Floater">
+        <Setter Property="Background" Value="{DynamicResource FloaterBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource FloaterTextColor}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource FloaterCornerRadius}" />
+        <Setter Property="AnimationDuration" Value="{DynamicResource FloaterAnimationDuration}" />
+        <Setter Property="MaskColor" Value="{DynamicResource FloaterMaskColor}" />
+        <Setter Property="Margin" Value="0"></Setter>
+        <Setter Property="Padding" Value="{DynamicResource FloaterMargin}" />
+        <Setter Property="Location" Value="Top"></Setter>
+        <Setter Property="ShadowOffsetX" Value="{DynamicResource FloaterShadowOffsetX}"></Setter>
+        <Setter Property="ShadowOffsetY" Value="{DynamicResource FloaterShadowOffsetY}"></Setter>
+        <Setter Property="ShadowColor" Value="{DynamicResource FloaterShadowColor}"></Setter>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid Name="PART_FloaterRoot"
+                      IsHitTestVisible="{TemplateBinding IsOpen}">
+                    <!-- Mask -->
+                    <Rectangle
+                        Name="PART_FloaterMask"
+                        Grid.RowSpan="2"
+                        Fill="{DynamicResource FloaterMaskColor}"
+                        IsVisible="{TemplateBinding ShowBackgroundMask}"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        Opacity="1">
+                        <Rectangle.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity"
+                                                  Duration="{Binding AnimationDuration, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Easing="CubicEaseInOut">
+                                </DoubleTransition>
+                            </Transitions>
+                        </Rectangle.Transitions>
+                    </Rectangle>
+                    <Grid Name="PART_Floater">
+                        <Interaction.Behaviors>
+                            <behaviors:DialogDragBehavior
+                                ClickToDismiss="{Binding ClickToDismiss, RelativeSource={RelativeSource TemplatedParent}}"
+                                AnimationDuration="{Binding AnimationDuration, RelativeSource={RelativeSource TemplatedParent}}" />
+                        </Interaction.Behaviors>
+                        <Label Content="{TemplateBinding Location}" x:Name="PART_FloaterLocation" IsVisible="False"></Label>
+                        <Border Name="PART_FloaterContent"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="{TemplateBinding Location, Converter={StaticResource FloaterLocationToVerticalAlignmentConverter}}">
+                            <Border.Effect>
+                                <DropShadowEffect
+                                    OffsetX="{Binding ShadowOffsetX, RelativeSource={RelativeSource TemplatedParent}}"
+                                    OffsetY="{Binding ShadowOffsetY, RelativeSource={RelativeSource TemplatedParent}}"
+                                    Color="{Binding ShadowColor, RelativeSource={RelativeSource TemplatedParent}}" />
+                            </Border.Effect>
+                            <Border.Margin>
+                                <MultiBinding Converter="{StaticResource FloaterLocationToSafeAreaConverter}"
+                                              Mode="TwoWay">
+                                    <Binding Path="SafePadding" Mode="TwoWay"
+                                             RelativeSource="{RelativeSource AncestorType=controls:DialogHost}" />
+                                    <Binding ElementName="PART_FloaterLocation" />
+                                    <Binding Path="Padding" RelativeSource="{RelativeSource TemplatedParent}" />
+                                </MultiBinding>
+                            </Border.Margin>
+                            <Border.RenderTransform>
+                                <TranslateTransform Y="0"></TranslateTransform>
+                            </Border.RenderTransform>
+                            <ContentPresenter
+                                Name="PART_ContentPresenter"
+                                TextWrapping="Wrap"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Content="{TemplateBinding Content}" />
+                        </Border>
+                    </Grid>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^">
+            <Setter Property="Opacity" Value="0"></Setter>
+        </Style>
+        <Style Selector="^:open, ^:opening">
+            <Setter Property="Opacity" Value="1"></Setter>
+        </Style>
+        <Style Selector="^:closing">
+            <Setter Property="Opacity" Value="1"></Setter>
+        </Style>
+
+        <Style Selector="^:closed /template/ Rectangle#PART_FloaterMask">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style Selector="^:closing /template/ Rectangle#PART_FloaterMask">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style Selector="^:open /template/ Rectangle#PART_FloaterMask">
+            <Setter Property="Opacity" Value="1"></Setter>
+        </Style>
+
+        <Style Selector="^:opening /template/ Rectangle#PART_FloaterMask">
+            <Setter Property="Opacity" Value="1"></Setter>
+        </Style>
+
+        <Style Selector="^:closed">
+            <Setter Property="Opacity" Value="0"></Setter>
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

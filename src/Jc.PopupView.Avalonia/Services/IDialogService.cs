@@ -9,4 +9,6 @@ public interface IDialogService
     void CloseSheet<TContent>(TContent content) where TContent : Control;
     void OpenToast<TContent>(TContent content, Action<Toast>? configure = null) where TContent : Control;
     void CloseToast<TContent>(TContent content) where TContent : Control;
+    void OpenFloater<TContent>(TContent content, Action<Floater>? configure = null) where TContent : Control;
+    void CloseFloater<TContent>(TContent content) where TContent : Control;
 }

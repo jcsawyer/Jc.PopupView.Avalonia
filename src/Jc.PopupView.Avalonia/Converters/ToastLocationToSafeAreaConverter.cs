@@ -8,11 +8,6 @@ namespace Jc.PopupView.Avalonia.Converters;
 
 internal sealed class ToastLocationToSafeAreaConverter : IMultiValueConverter
 {
-    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        throw new NotImplementedException();
-    }
-
     public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
     {
         if (values[0] is Thickness safeArea && values[1] is Label toastLocation)

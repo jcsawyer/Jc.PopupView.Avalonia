@@ -44,6 +44,15 @@ public class DialogHost : TemplatedControl
         get => GetValue(ToastsProperty);
         set => SetValue(ToastsProperty, value);
     }
+
+    public static readonly StyledProperty<AvaloniaList<Floater>> FloatersProperty = AvaloniaProperty.Register<DialogHost, AvaloniaList<Floater>>(
+        nameof(Floaters), defaultValue: new AvaloniaList<Floater>());
+
+    public AvaloniaList<Floater> Floaters
+    {
+        get => GetValue(FloatersProperty);
+        set => SetValue(FloatersProperty, value);
+    }
     
     public static readonly StyledProperty<bool> UseSafePaddingProperty = AvaloniaProperty.Register<DialogHost, bool>(
         nameof(UseSafePadding), defaultValue: true);
@@ -115,6 +124,31 @@ public class DialogHost : TemplatedControl
                 }
             }
         };
+        
+        Floaters.CollectionChanged += (_, args) =>
+        {
+            if (args.NewItems is not null)
+            {
+                foreach (var floater in args.NewItems)
+                {
+                    if (floater is Control control)
+                    {
+                        _dialogHost.Children.Add(control);
+                    }
+                }
+            }
+
+            if (args.OldItems is not null)
+            {
+                foreach (var floater in args.OldItems)
+                {
+                    if (floater is Control control)
+                    {
+                        _dialogHost.Children.Remove(control);
+                    }
+                }
+            }
+        };
     }
 
     protected override void OnLoaded(RoutedEventArgs e)
@@ -158,6 +192,18 @@ public class DialogHost : TemplatedControl
             }
         }
         foreach (var child in Toasts)
+        {
+            if (child is Control control)
+            {
+                _dialogHost.Children.Add(control);
+            }
+            else
+            {
+                throw new InvalidDialogHostControl();
+            }
+        }
+
+        foreach (var child in Floaters)
         {
             if (child is Control control)
             {
