@@ -1,6 +1,6 @@
 namespace Jc.PopupView.Avalonia.Controls;
 
-public enum ToastLocation
+public enum FloaterLocation
 {
     Top,
     Bottom,

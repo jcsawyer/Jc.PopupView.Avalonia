@@ -154,7 +154,7 @@
                                   VerticalAlignment="Center">
                                 <TextBlock Grid.Row="0" Classes="h2" Text="Top version 1" />
                                 <TextBlock Grid.Row="1" Classes="p"
-                                           Text="A simple toast notification at the top using safe are padding." />
+                                           Text="A simple toast notification at the top using safe area padding." />
                             </Grid>
                         </Grid>
                     </Button>
@@ -224,6 +224,73 @@
                             </Grid>
                         </Grid>
                     </Button>
+                    <TextBlock Classes="h1">Floaters</TextBlock>
+                    <!-- Floater Top -->
+                    <Button Classes="panel" Command="{Binding OpenFloater1Command}">
+                        <Button.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity" Duration="0:0:0.1"></DoubleTransition>
+                            </Transitions>
+                        </Button.Transitions>
+                        <Grid ColumnSpacing="20" RowSpacing="10" ColumnDefinitions="Auto, *">
+                            <Border Grid.Column="0" Classes="icon">
+                                <Grid RowDefinitions="*, Auto">
+                                    <Border HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="10"
+                                            CornerRadius="10 10 3 3" />
+                                </Grid>
+                            </Border>
+                            <Grid Grid.Column="1" RowDefinitions="Auto, Auto" ColumnDefinitions="*"
+                                  VerticalAlignment="Center">
+                                <TextBlock Grid.Row="0" Classes="h2" Text="Top version 1" />
+                                <TextBlock Grid.Row="1" Classes="p"
+                                           Text="A simple floater at the top using safe area padding." />
+                            </Grid>
+                        </Grid>
+                    </Button>
+                    <!-- Floater Bottom 1 -->
+                    <Button Classes="panel" Command="{Binding OpenFloater2Command}">
+                        <Button.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity" Duration="0:0:0.1"></DoubleTransition>
+                            </Transitions>
+                        </Button.Transitions>
+                        <Grid ColumnSpacing="20" RowSpacing="10" ColumnDefinitions="Auto, *">
+                            <Border Grid.Column="0" Classes="icon">
+                                <Grid RowDefinitions="*, Auto">
+                                    <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="10"
+                                            CornerRadius="3 3 10 10 " />
+                                </Grid>
+                            </Border>
+                            <Grid Grid.Column="1" RowDefinitions="Auto, Auto" ColumnDefinitions="*"
+                                  VerticalAlignment="Center">
+                                <TextBlock Grid.Row="0" Classes="h2" Text="Bottom version 1" />
+                                <TextBlock Grid.Row="1" Classes="p"
+                                           Text="A simple floater notification at the bottom using safe area padding." />
+                            </Grid>
+                        </Grid>
+                    </Button>
+                    <!-- Floater Bottom 2 -->
+                    <Button Classes="panel" Command="{Binding OpenFloater3Command}">
+                        <Button.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity" Duration="0:0:0.1"></DoubleTransition>
+                            </Transitions>
+                        </Button.Transitions>
+                        <Grid ColumnSpacing="20" RowSpacing="10" ColumnDefinitions="Auto, *">
+                            <Border Grid.Column="0" Classes="icon">
+                                <Grid RowDefinitions="*, Auto">
+                                    <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="10"
+                                            CornerRadius="3 3 10 10 " />
+                                </Grid>
+                            </Border>
+                            <Grid Grid.Column="1" RowDefinitions="Auto, Auto" ColumnDefinitions="*"
+                                  VerticalAlignment="Center">
+                                <TextBlock Grid.Row="0" Classes="h2" Text="Bottom version 2" />
+                                <TextBlock Grid.Row="1" Classes="p"
+                                           Text="A simple floater notification that requires interaction." />
+                            </Grid>
+                        </Grid>
+                    </Button>
                 </StackPanel>
             </ScrollViewer>
             <popup:DialogHost.Sheets>
@@ -259,6 +326,32 @@
                     <toasts:Toast2 />
                 </popup:Toast>
             </popup:DialogHost.Toasts>
+            <popup:DialogHost.Floaters>
+            <popup:Floater
+                IsOpen="{Binding IsFloater1Open}"
+                Background="#fe504e"
+                Padding="50"
+                Foreground="#ffffff">
+                <toasts:Toast1 />
+            </popup:Floater>
+            <popup:Floater
+                IsOpen="{Binding IsFloater2Open}"
+                Location="Bottom"
+                Background="#fe504e"
+                Foreground="#ffffff">
+                <toasts:Toast1 />
+            </popup:Floater>
+            <popup:Floater
+                IsOpen="{Binding IsFloater3Open}"
+                Background="#f5f5f5"
+                Foreground="#000000"
+                ShowBackgroundMask="True"
+                Location="Bottom"
+                ClickOutsideToDismiss="False"
+                ClickToDismiss="False">
+                <toasts:Toast2 />
+            </popup:Floater>
+            </popup:DialogHost.Floaters>
         </popup:DialogHost>
     </Grid>
 </UserControl>
