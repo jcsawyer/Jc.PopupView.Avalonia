@@ -19,6 +19,7 @@
     <!-- Converters -->
     <converters:SheetPillLocationVisibilityConverter x:Key="SheetPillLocationToVisibilityConverter" />
     <converters:SheetPullLocationPaddingConverter x:Key="SheetPillLocationPaddingConverter" />
+    <converters:SheetScrollDirectionConverter x:Key="SheetScrollDirectionConverter" />
 
     <!-- Defaults -->
     <system:TimeSpan x:Key="SheetAnimationDuration">0:0:0.2</system:TimeSpan>
@@ -128,8 +129,8 @@
                                             Padding="{TemplateBinding PillLocation, Converter={StaticResource SheetPillLocationPaddingConverter}}">
                                         <ScrollViewer
                                             Name="PART_ScrollViewer"
-                                            HorizontalScrollBarVisibility="Disabled"
-                                            VerticalScrollBarVisibility="Auto">
+                                            HorizontalScrollBarVisibility="{TemplateBinding ScrollDirection, Converter={StaticResource SheetScrollDirectionConverter}, ConverterParameter=Horizontal}"
+                                            VerticalScrollBarVisibility="{TemplateBinding ScrollDirection, Converter={StaticResource SheetScrollDirectionConverter}, ConverterParameter=Vertical}">
                                             <ContentPresenter
                                                 Name="PART_ContentPresenter"
                                                 TextWrapping="Wrap"
