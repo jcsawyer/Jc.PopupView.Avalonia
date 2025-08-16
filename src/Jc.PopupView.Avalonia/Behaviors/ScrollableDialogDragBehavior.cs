@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -93,23 +94,47 @@ internal sealed class ScrollableDialogDragBehavior : Behavior<Grid>
             return;
         }
 
-        if (e.GetCurrentPoint(AssociatedObject).Properties.IsLeftButtonPressed)
+        if (!e.GetCurrentPoint(AssociatedObject).Properties.IsLeftButtonPressed)
         {
-            _isDragging = true;
-            _dragStart = e.GetPosition(AssociatedObject);
-            _lastDrag = _dragStart;
-            e.Pointer.Capture(AssociatedObject);
-
-            if (AssociatedObject is { } grid)
-            {
-                grid.AddHandler(InputElement.PointerReleasedEvent, GridOnPointerReleased, handledEventsToo: true,
-                    routes: RoutingStrategies.Tunnel);
-                grid.AddHandler(InputElement.PointerMovedEvent, GridOnPointerMoved, handledEventsToo: true,
-                    routes: RoutingStrategies.Tunnel);
-                grid.AddHandler(InputElement.PointerCaptureLostEvent, GridOnPointerCaptureLost, handledEventsToo: true,
-                    routes: RoutingStrategies.Tunnel);
-            }
+            return;
         }
+
+        if (IsInteractiveControl(e.Source as Visual))
+        {
+            // Let the underlying control handle the event if it's an interactive control
+            return;
+        }
+        
+        _isDragging = true;
+        _dragStart = e.GetPosition(AssociatedObject);
+        _lastDrag = _dragStart;
+        e.Pointer.Capture(AssociatedObject);
+
+        if (AssociatedObject is { } grid)
+        {
+            grid.AddHandler(InputElement.PointerReleasedEvent, GridOnPointerReleased, handledEventsToo: false,
+                routes: RoutingStrategies.Tunnel);
+            grid.AddHandler(InputElement.PointerMovedEvent, GridOnPointerMoved, handledEventsToo: false,
+                routes: RoutingStrategies.Tunnel);
+            grid.AddHandler(InputElement.PointerCaptureLostEvent, GridOnPointerCaptureLost, handledEventsToo: false,
+                routes: RoutingStrategies.Tunnel);
+        }
+    }
+    
+    private static bool IsInteractiveControl(Visual? visual)
+    {
+        while (visual is not null)
+        {
+            if (visual is InputElement { Focusable: true })
+                return true;
+
+            // Add explicit checks for controls where Focusable might be false by default
+            if (visual is ListBoxItem or ComboBoxItem)
+                return true;
+
+            visual = visual.GetVisualParent();
+        }
+        return false;
     }
 
     private void GridOnPointerReleased(object? sender, PointerReleasedEventArgs e)
