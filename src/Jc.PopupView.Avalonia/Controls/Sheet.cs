@@ -128,11 +128,12 @@ public class Sheet : DialogBase
         _sheetPart = e.NameScope.Find<Grid>("PART_Sheet");
         _maskPart = e.NameScope.Find<Rectangle>("PART_SheetMask");
 
-        _maskPart?.AddHandler(PointerPressedEvent, (_, _) =>
+        _maskPart?.AddHandler(PointerPressedEvent, (_, args) =>
         {
             if (ClickOutsideToDismiss)
             {
                 IsOpen = false;
+                args.Handled = true;
             }
         });
     }

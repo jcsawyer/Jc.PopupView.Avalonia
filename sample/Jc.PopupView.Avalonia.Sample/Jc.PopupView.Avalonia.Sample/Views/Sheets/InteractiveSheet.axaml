@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Jc.PopupView.Avalonia.Sample.Views.Sheets.InteractiveSheet">
+    <StackPanel Orientation="Vertical" Spacing="20">
+        <TextBox Watermark="Enter some text" />
+        <ListBox>
+            <ListBoxItem Content="Item 1" />
+            <ListBoxItem Content="Item 2" />
+            <ListBoxItem Content="Item 3" />
+            <ListBoxItem Content="Item 4" />
+            <ListBoxItem Content="Item 5" />
+        </ListBox>
+        <ComboBox>
+            <ComboBoxItem Content="Item 1" />
+            <ComboBoxItem Content="Item 2" />
+            <ComboBoxItem Content="Item 3" />
+            <ComboBoxItem Content="Item 4" />
+            <ComboBoxItem Content="Item 5" />
+        </ComboBox>
+    </StackPanel>
+</UserControl>
