@@ -82,6 +82,15 @@ public class Sheet : DialogBase
     public static readonly StyledProperty<IBrush> PillColorProperty = AvaloniaProperty.Register<Sheet, IBrush>(
         nameof(PillColor));
 
+    public static readonly StyledProperty<SheetScrollDirection> ScrollDirectionProperty = AvaloniaProperty.Register<Sheet, SheetScrollDirection>(
+        nameof(ScrollDirection), defaultValue: SheetScrollDirection.Vertical);
+
+    public SheetScrollDirection ScrollDirection
+    {
+        get => GetValue(ScrollDirectionProperty);
+        set => SetValue(ScrollDirectionProperty, value);
+    }
+
     public IBrush PillColor
     {
         get => GetValue(PillColorProperty);
