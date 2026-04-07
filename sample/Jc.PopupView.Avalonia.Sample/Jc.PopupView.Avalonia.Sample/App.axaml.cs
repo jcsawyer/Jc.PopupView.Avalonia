@@ -25,7 +25,10 @@ public partial class App : Application
         }
         else if (ApplicationLifetime is IActivityApplicationLifetime activity)
         {
-            activity.MainViewFactory = () => new MainView();
+            activity.MainViewFactory = () => new MainView()
+            {
+                DataContext = new MainViewModel()
+            };
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
