@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net9.0-ios</TargetFramework>
+        <TargetFramework>net10.0-ios</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
@@ -11,7 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Avalonia.iOS" Version="11.3.5" />
+      <PackageReference Include="Avalonia.iOS" Version="12.0.0" />
     </ItemGroup>
 
 </Project>
