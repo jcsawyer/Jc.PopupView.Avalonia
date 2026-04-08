@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using Avalonia;
-using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
@@ -192,7 +191,7 @@ public class Toast : DialogBase
 
                 if (DetachOnClose)
                 {
-                    var host = DialogHost.GetDialogHost();
+                    var host = DialogHostRegistry.GetActiveHost();
                     host.Toasts.Remove(this);
                 }
             }

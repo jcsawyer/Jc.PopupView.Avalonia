@@ -209,7 +209,7 @@ public sealed class Floater : DialogBase
 
                 if (DetachOnClose)
                 {
-                    var host = DialogHost.GetDialogHost();
+                    var host = DialogHostRegistry.GetActiveHost();
                     host.Floaters.Remove(this);
                 }
             }

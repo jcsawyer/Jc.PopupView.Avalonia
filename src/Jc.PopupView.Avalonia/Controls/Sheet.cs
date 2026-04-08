@@ -198,7 +198,7 @@ public class Sheet : DialogBase
 
                 if (DetachOnClose)
                 {
-                    var host = DialogHost.GetDialogHost();
+                    var host = DialogHostRegistry.GetActiveHost();
                     host.Sheets.Remove(this);
                 }
             }
