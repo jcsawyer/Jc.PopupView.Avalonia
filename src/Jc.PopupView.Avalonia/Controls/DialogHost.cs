@@ -5,15 +5,17 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Platform;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
-using Avalonia.Media;
 using Avalonia.Metadata;
 using Avalonia.VisualTree;
 using Jc.PopupView.Avalonia.Exceptions;
+using Jc.PopupView.Avalonia.Services;
 
 namespace Jc.PopupView.Avalonia.Controls;
 
 public class DialogHost : TemplatedControl
 {
+    private static Window? _host;
+    
     private Grid? _dialogHost;
 
     public static readonly StyledProperty<object?> ContentProperty = AvaloniaProperty.Register<DialogHost, object?>(
@@ -76,6 +78,9 @@ public class DialogHost : TemplatedControl
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
+        
+        DialogHostRegistry.Register(TopLevel.GetTopLevel(this), this);
+        
         _dialogHost = e.NameScope.Find<Grid>("PART_DialogHost");
         UpdateVisualChildren();
 
@@ -214,35 +219,5 @@ public class DialogHost : TemplatedControl
                 throw new InvalidDialogHostControl();
             }
         }
-    }
-
-    /// <summary>
-    /// Gets the global <see cref="DialogHost"/> control from the visual tree.
-    /// </summary>
-    /// <returns>The DialogHost control instance.</returns>
-    /// <exception cref="InvalidOperationException">When there is none, or more than one DialogHost control instance.</exception>
-    internal static DialogHost GetDialogHost()
-    {
-        DialogHost? dialogHost;
-        try
-        {
-            dialogHost = ((ISingleViewApplicationLifetime)Application.Current!.ApplicationLifetime!).MainView!
-                .GetVisualDescendants().OfType<DialogHost>().Single();
-        }
-        catch
-        {
-            try
-            {
-                dialogHost = ((IClassicDesktopStyleApplicationLifetime)Application.Current!.ApplicationLifetime!)
-                    .MainWindow!
-                    .GetVisualDescendants().OfType<DialogHost>().Single();
-            }
-            catch
-            {
-                throw new InvalidDialogHostException();
-            }
-        }
-
-        return dialogHost;
     }
 }

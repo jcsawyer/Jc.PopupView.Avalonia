@@ -1,7 +1,6 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Jc.PopupView.Avalonia.Native;
 using Jc.PopupView.Avalonia.Sample.ViewModels;
 using Jc.PopupView.Avalonia.Sample.Views;
 
@@ -19,6 +18,13 @@ public partial class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.MainWindow = new MainWindow
+            {
+                DataContext = new MainViewModel()
+            };
+        }
+        else if (ApplicationLifetime is IActivityApplicationLifetime activity)
+        {
+            activity.MainViewFactory = () => new MainView()
             {
                 DataContext = new MainViewModel()
             };

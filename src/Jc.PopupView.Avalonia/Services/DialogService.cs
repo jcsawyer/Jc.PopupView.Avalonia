@@ -8,7 +8,7 @@ public sealed class DialogService : IDialogService
 {
     public void OpenSheet<TContent>(TContent content, Action<Sheet>? configure = null) where TContent : Control
     {
-        var dialogHost = DialogHost.GetDialogHost();
+        var dialogHost = DialogHostRegistry.GetActiveHost();
         var sheet = new Sheet();
         configure?.Invoke(sheet);
         sheet.Content = content;
@@ -23,14 +23,14 @@ public sealed class DialogService : IDialogService
 
     public void CloseSheet<TContent>(TContent content) where TContent : Control
     {
-        var dialogHost = DialogHost.GetDialogHost();
+        var dialogHost = DialogHostRegistry.GetActiveHost();
         var sheet = dialogHost.Sheets.FirstOrDefault(s => Equals(s.Content, content));
         sheet?.Close();
     }
 
     public void OpenToast<TContent>(TContent content, Action<Toast>? configure = null) where TContent : Control
     {
-        var dialogHost = DialogHost.GetDialogHost();
+        var dialogHost = DialogHostRegistry.GetActiveHost();
         var toast = new Toast();
         configure?.Invoke(toast);
 
@@ -47,14 +47,14 @@ public sealed class DialogService : IDialogService
 
     public void CloseToast<TContent>(TContent content) where TContent : Control
     {
-        var dialogHost = DialogHost.GetDialogHost();
+        var dialogHost = DialogHostRegistry.GetActiveHost();
         var toast = dialogHost.Toasts.FirstOrDefault(t => Equals(t.Content, content));
         toast?.Close();
     }
 
     public void OpenFloater<TContent>(TContent content, Action<Floater>? configure = null) where TContent : Control
     {
-        var dialogHost = DialogHost.GetDialogHost();
+        var dialogHost = DialogHostRegistry.GetActiveHost();
         var floater = new Floater();
         configure?.Invoke(floater);
         
@@ -71,7 +71,7 @@ public sealed class DialogService : IDialogService
 
     public void CloseFloater<TContent>(TContent content) where TContent : Control
     {
-        var dialogHost = DialogHost.GetDialogHost();
+        var dialogHost = DialogHostRegistry.GetActiveHost();
         var floater = dialogHost.Floaters.FirstOrDefault(f => Equals(f.Content, content));
         floater?.Close();
     }

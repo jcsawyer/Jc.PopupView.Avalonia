@@ -5,13 +5,18 @@ namespace Jc.PopupView.Avalonia.Native.Android;
 
 public class BottomSheetService : IBottomSheetService
 {
-    private readonly Context _context;
+    private Context _context;
     public event EventHandler? Opened;
     public event EventHandler? Closed;
 
     public BottomSheetService(Context context)
     {
         _context = context;
+    }
+
+    public void Initialize(Activity activity)
+    {
+        _context = activity;
     }
 
     public void ShowBottomSheet(Control control, object? dataContext = null)
