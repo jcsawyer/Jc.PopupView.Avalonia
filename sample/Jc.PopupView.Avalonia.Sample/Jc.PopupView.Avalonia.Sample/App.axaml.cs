@@ -1,7 +1,6 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Jc.PopupView.Avalonia.Native;
 using Jc.PopupView.Avalonia.Sample.ViewModels;
 using Jc.PopupView.Avalonia.Sample.Views;
 

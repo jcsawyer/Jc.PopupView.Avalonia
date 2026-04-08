@@ -1,6 +1,7 @@
 ﻿using System;
 using Android.App;
 using Android.Content.PM;
+using Android.OS;
 using Android.Runtime;
 using Avalonia;
 using Avalonia.Android;
@@ -15,7 +16,14 @@ namespace Jc.PopupView.Avalonia.Sample.Android;
     Icon = "@drawable/icon",
     MainLauncher = true,
     ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize | ConfigChanges.UiMode)]
-public class MainActivity : AvaloniaMainActivity { }
+public class MainActivity : AvaloniaMainActivity
+{
+    protected override void OnCreate(Bundle? savedInstanceState)
+    {
+        base.OnCreate(savedInstanceState);
+        this.UsePopupsNative();
+    }
+}
 
 [Application]
 public class AndroidApp : AvaloniaAndroidApplication<App>
@@ -25,7 +33,6 @@ public class AndroidApp : AvaloniaAndroidApplication<App>
     protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
     {
         return base.CustomizeAppBuilder(builder)
-            .UsePopupsNative(this)
             .WithInterFont()
             .UseReactiveUI();
     }
