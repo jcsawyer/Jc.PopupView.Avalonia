@@ -11,4 +11,11 @@ public interface IDialogService
     void CloseToast<TContent>(TContent content) where TContent : Control;
     void OpenFloater<TContent>(TContent content, Action<Floater>? configure = null) where TContent : Control;
     void CloseFloater<TContent>(TContent content) where TContent : Control;
+
+    Task<IPopupHandle> ShowToastAsync<TContent>(TContent content, PopupOptions? options = null, CancellationToken cancellationToken = default) where TContent : Control;
+    Task<IPopupHandle> ShowFloaterAsync<TContent>(TContent content, PopupOptions? options = null, CancellationToken cancellationToken = default) where TContent : Control;
+    Task<IPopupHandle> ShowSheetAsync<TContent>(TContent content, PopupOptions? options = null, CancellationToken cancellationToken = default) where TContent : Control;
+    Task<TResult?> ShowSheetForResultAsync<TResult, TContent>(TContent content, PopupOptions? options = null, CancellationToken cancellationToken = default)
+        where TContent : Control, IPopupResultSource;
+    Task<bool> DismissTopMostAsync(CancellationToken cancellationToken = default);
 }

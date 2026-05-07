@@ -33,8 +33,16 @@ public class MainViewModel : ViewModelBase
     public ICommand OpenSheet3Command { get; }
 
     public ICommand OpenSheet4Command { get; }
+    public ICommand OpenSheetResultCommand { get; }
 
     public ICommand OpenNativeSheet1Command { get; }
+
+    private string? _lastSheetResult;
+    public string? LastSheetResult
+    {
+        get => _lastSheetResult;
+        set => this.RaiseAndSetIfChanged(ref _lastSheetResult, value);
+    }
 
     private bool _isToast1Open;
 
@@ -99,6 +107,19 @@ public class MainViewModel : ViewModelBase
         OpenSheet3Command = ReactiveCommand.Create(() =>
             new DialogService().OpenSheet(new TextBlock { Text = "Hello, from dynamic dialog!" }));
         OpenSheet4Command = ReactiveCommand.Create(() => new DialogService().OpenSheet(new InteractiveSheet()));
+        OpenSheetResultCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var service = new DialogService();
+            var result = await service.ShowSheetForResultAsync<string, ResultSheet>(
+                new ResultSheet(),
+                new PopupOptions
+                {
+                    Detents = [0.78, 0.56, 0.36],
+                    InitialDetent = 0.56,
+                });
+
+            LastSheetResult = result ?? "cancelled";
+        });
         OpenNativeSheet1Command = ReactiveCommand.Create(() =>
             Native.BottomSheetService.Current?.ShowBottomSheet(new Sheet1()));
         OpenToast1Command = ReactiveCommand.Create(() => IsToast1Open = true);

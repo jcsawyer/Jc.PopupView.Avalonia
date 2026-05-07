@@ -70,6 +70,7 @@
                         <Grid
                             Name="PART_Sheet"
                             Grid.Row="1"
+                            VerticalAlignment="Bottom"
                             RowDefinitions="Auto, *">
                             <Grid.RenderTransform>
                                 <TranslateTransform Y="0" />
