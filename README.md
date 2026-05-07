@@ -234,6 +234,7 @@ Sheets can be configured as:
 | ClickToDismiss | false | Attempting to set this on a sheet results in an invalid operation exception |
 | PillLocation | Internal | Location of the drag indicator pill (Internal or External) |
 | PillColor | | The color of the drag indicator pill |
+| DragStartMode | FullSheet | Where drag-to-dismiss can start (FullSheet or TabBarOnly) |
 | Detents | null | Optional list of sheet detents (fractions or absolute heights) |
 | InitialDetent | null | Optional initial detent (fraction or absolute height) |
 | SnapPoint | null | Optional max-height snap point (fraction or absolute height) |

@@ -31,6 +31,16 @@ public class MainViewModel : ViewModelBase
 
     public ICommand OpenSheet2Command { get; }
 
+    private bool _isSheetTabBarOnlyOpen;
+
+    public bool IsSheetTabBarOnlyOpen
+    {
+        get => _isSheetTabBarOnlyOpen;
+        set => this.RaiseAndSetIfChanged(ref _isSheetTabBarOnlyOpen, value);
+    }
+
+    public ICommand OpenSheetTabBarOnlyCommand { get; }
+
     public ICommand OpenSheet3Command { get; }
 
     public ICommand OpenSheet4Command { get; }
@@ -121,6 +131,7 @@ public class MainViewModel : ViewModelBase
     {
         OpenSheet1Command = ReactiveCommand.Create(() => IsSheet1Open = true);
         OpenSheet2Command = ReactiveCommand.Create(() => IsSheet2Open = true);
+        OpenSheetTabBarOnlyCommand = ReactiveCommand.Create(() => IsSheetTabBarOnlyOpen = true);
         OpenSheet3Command = ReactiveCommand.Create(() =>
             new DialogService().OpenSheet(new TextBlock { Text = "Hello, from dynamic dialog!" }));
         OpenSheet4Command = ReactiveCommand.Create(() => new DialogService().OpenSheet(new InteractiveSheet()));

@@ -78,6 +78,7 @@
                             <Interaction.Behaviors>
                                 <behaviors:ScrollableDialogDragBehavior
                                     ClickToDismiss="False"
+                                    DragStartMode="{Binding DragStartMode, RelativeSource={RelativeSource TemplatedParent}}"
                                     AnimationDuration="{Binding AnimationDuration, RelativeSource={RelativeSource TemplatedParent}}" />
                             </Interaction.Behaviors>
                             <Border
