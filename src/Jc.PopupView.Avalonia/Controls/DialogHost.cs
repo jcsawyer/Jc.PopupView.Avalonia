@@ -38,6 +38,16 @@ public class DialogHost : TemplatedControl, IPopupOverlayHost
         set => SetValue(SheetsProperty, value);
     }
 
+    public static readonly StyledProperty<AvaloniaList<Popup>> PopupsProperty =
+        AvaloniaProperty.Register<DialogHost, AvaloniaList<Popup>>(
+            nameof(Popups), defaultValue: new AvaloniaList<Popup>());
+
+    public AvaloniaList<Popup> Popups
+    {
+        get => GetValue(PopupsProperty);
+        set => SetValue(PopupsProperty, value);
+    }
+
     public static readonly StyledProperty<AvaloniaList<Toast>> ToastsProperty = AvaloniaProperty.Register<DialogHost, AvaloniaList<Toast>>(
         nameof(Toasts), defaultValue: new AvaloniaList<Toast>());
 
@@ -107,6 +117,31 @@ public class DialogHost : TemplatedControl, IPopupOverlayHost
                 foreach (var sheet in args.OldItems)
                 {
                     if (sheet is Control control)
+                    {
+                        _modalLayer?.Children.Remove(control);
+                    }
+                }
+            }
+        };
+
+        Popups.CollectionChanged += (_, args) =>
+        {
+            if (args.NewItems is not null)
+            {
+                foreach (var popup in args.NewItems)
+                {
+                    if (popup is Control control)
+                    {
+                        _modalLayer?.Children.Add(control);
+                    }
+                }
+            }
+
+            if (args.OldItems is not null)
+            {
+                foreach (var popup in args.OldItems)
+                {
+                    if (popup is Control control)
                     {
                         _modalLayer?.Children.Remove(control);
                     }
@@ -273,6 +308,7 @@ public class DialogHost : TemplatedControl, IPopupOverlayHost
             Sheet sheet => sheet.AnimationDuration,
             Toast toast => toast.AnimationDuration,
             Floater floater => floater.AnimationDuration,
+            Popup popup => popup.AnimationDuration,
             _ => TimeSpan.FromMilliseconds(220),
         };
     }
@@ -302,6 +338,13 @@ public class DialogHost : TemplatedControl, IPopupOverlayHost
                     Dispatcher.UIThread.Post(() => floater.IsOpen = true, DispatcherPriority.Loaded);
                 }
                 break;
+            case PopupKind.Popup:
+                if (entry.Dialog is Popup popup)
+                {
+                    Popups.Add(popup);
+                    Dispatcher.UIThread.Post(() => popup.IsOpen = true, DispatcherPriority.Loaded);
+                }
+                break;
         }
     }
 
@@ -325,6 +368,18 @@ public class DialogHost : TemplatedControl, IPopupOverlayHost
         _toastLayer.Children.Clear();
 
         foreach (var child in Sheets)
+        {
+            if (child is Control control)
+            {
+                _modalLayer.Children.Add(control);
+            }
+            else
+            {
+                throw new InvalidDialogHostControl();
+            }
+        }
+
+        foreach (var child in Popups)
         {
             if (child is Control control)
             {

@@ -10,7 +10,7 @@
         <TextBlock Text="Move Message" FontSize="18" FontWeight="SemiBold" />
         <TextBlock Text="Choose where this message should go." Opacity="0.75" />
 
-        <Button Content="Archive" Click="OnArchiveClick" />
+        <Button Content="Nested" Click="OnNestedClick" />
         <Button Content="Important" Click="OnImportantClick" />
         <Button Content="Cancel" Click="OnCancelClick" />
     </StackPanel>

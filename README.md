@@ -18,6 +18,7 @@ Beautiful, animinated toasts, alerts, and other popups for Avalonia UI.
     - [Toasts](#toasts)
     - [Sheets](#sheets)
     - [Floaters](#floaters)
+    - [Popups](#popups)
 
 ## Screenshots
 
@@ -117,6 +118,10 @@ public interface IDialogService
         where TContent : Control;
     void CloseFloater<TContent>(TContent content)
         where TContent : Control;
+    void OpenPopup<TContent>(TContent content, Action<Popup>? configure = null)
+        where TContent : Control;
+    void ClosePopup<TContent>(TContent content)
+        where TContent : Control;
 
     Task<IPopupHandle> ShowToastAsync<TContent>(
         TContent content,
@@ -136,6 +141,12 @@ public interface IDialogService
         CancellationToken cancellationToken = default)
         where TContent : Control;
 
+    Task<IPopupHandle> ShowPopupAsync<TContent>(
+        TContent content,
+        Action<Popup>? configure = null,
+        CancellationToken cancellationToken = default)
+        where TContent : Control;
+
     Task<TResult?> ShowSheetForResultAsync<TResult, TContent>(
         TContent content,
         Action<Sheet>? configure = null,
@@ -151,6 +162,12 @@ public interface IDialogService
     Task<TResult?> ShowFloaterForResultAsync<TResult, TContent>(
         TContent content,
         Action<Floater>? configure = null,
+        CancellationToken cancellationToken = default)
+        where TContent : Control, IPopupResultSource;
+
+    Task<TResult?> ShowPopupForResultAsync<TResult, TContent>(
+        TContent content,
+        Action<Popup>? configure = null,
         CancellationToken cancellationToken = default)
         where TContent : Control, IPopupResultSource;
 
@@ -176,7 +193,7 @@ await handle.DismissAsync();
 
 For result-based popups, implement `IPopupResultSource` on your content and use the corresponding `Show*ForResultAsync` method.
 
-Configuration for `Show*Async` and `Show*ForResultAsync` is done by passing the same popup-specific configure actions used by `Open*` methods (`Action<Sheet>`, `Action<Toast>`, `Action<Floater>`).
+Configuration for `Show*Async` and `Show*ForResultAsync` is done by passing the same popup-specific configure actions used by `Open*` methods (`Action<Sheet>`, `Action<Toast>`, `Action<Floater>`, `Action<Popup>`).
 
 ### Common
 
@@ -263,3 +280,35 @@ Floaters can be configred as:
 | ShadowOffsetY | 5 | The drop shadow offset along the Y axis |
 | ShadowColor | #3a000000 | The drop shadow color |
 | Padding | 15 15 15 15 | The space between the floater and the end of the screen |
+
+### Popups
+
+Popups are modal overlays intended for focused actions and confirmations.
+
+```xml
+<popup:DialogHost.Popups>
+    <popup:Popup Position="Center">
+        <!-- Popup content -->
+    </popup:Popup>
+</popup:DialogHost.Popups>
+```
+
+Popups can be configured as:
+
+| Property | Default | Description |
+| --- | --- | --- |
+| Position | Center | Popup placement (`Center` or `Bottom`) |
+| ContentMargin | 18 18 18 18 | Space between popup content and screen edges |
+| OpenAnimationType | null | Override open animation (`Scale`, `Slide`, `Fade`, `None`) |
+| CloseAnimationType | null | Override close animation (`Scale`, `Slide`, `Fade`, `None`) |
+| ClickOutsideToDismiss | false | Clicking outside the popup closes the popup |
+| ShowBackgroundMask | true | Shows the popup background mask |
+
+Popup behavior notes:
+- Popups are modal overlays and are not drag-to-dismiss.
+- Dismiss popup content with `DialogService.ClosePopup(content)` or by tapping the backdrop when `ClickOutsideToDismiss` is enabled.
+- Set `ContentMargin` to `0` on bottom popups to attach content flush to the bottom edge.
+
+When animation overrides are not specified:
+- `Center` popups default to scale-in/scale-out.
+- `Bottom` popups default to slide-in/slide-out.
