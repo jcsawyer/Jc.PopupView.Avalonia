@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Jc.PopupView.Avalonia.Controls;
 
 namespace Jc.PopupView.Avalonia.Services;
 
@@ -10,12 +11,11 @@ public sealed class InMemoryPopupPresenter : IPopupPresenter
     public async Task<IPopupHandle> ShowAsync(
         PopupKind kind,
         string route,
-        Control content,
-        PopupOptions? options,
+        IDialog dialog,
         CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(route);
-        ArgumentNullException.ThrowIfNull(content);
+        ArgumentNullException.ThrowIfNull(dialog);
 
         await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
@@ -36,10 +36,7 @@ public sealed class InMemoryPopupPresenter : IPopupPresenter
 
             _stack.Add((kind, route, created));
 
-            if (kind == PopupKind.Toast && options?.Duration is TimeSpan duration)
-            {
-                _ = AutoDismissAsync(created, duration);
-            }
+            _ = kind;
 
             return created;
         }
@@ -52,11 +49,10 @@ public sealed class InMemoryPopupPresenter : IPopupPresenter
     public async Task<object?> ShowForResultAsync(
         PopupKind kind,
         string route,
-        Control content,
-        PopupOptions? options,
+        IDialog dialog,
         CancellationToken cancellationToken = default)
     {
-        var handle = await ShowAsync(kind, route, content, options, cancellationToken).ConfigureAwait(false);
+        var handle = await ShowAsync(kind, route, dialog, cancellationToken).ConfigureAwait(false);
         return handle;
     }
 
@@ -81,11 +77,5 @@ public sealed class InMemoryPopupPresenter : IPopupPresenter
 
         await handle.DismissAsync(cancellationToken).ConfigureAwait(false);
         return true;
-    }
-
-    private static async Task AutoDismissAsync(IPopupHandle handle, TimeSpan duration)
-    {
-        await Task.Delay(duration).ConfigureAwait(false);
-        await handle.DismissAsync().ConfigureAwait(false);
     }
 }

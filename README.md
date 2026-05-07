@@ -120,37 +120,37 @@ public interface IDialogService
 
     Task<IPopupHandle> ShowToastAsync<TContent>(
         TContent content,
-        PopupOptions? options = null,
+        Action<Toast>? configure = null,
         CancellationToken cancellationToken = default)
         where TContent : Control;
 
     Task<IPopupHandle> ShowFloaterAsync<TContent>(
         TContent content,
-        PopupOptions? options = null,
+        Action<Floater>? configure = null,
         CancellationToken cancellationToken = default)
         where TContent : Control;
 
     Task<IPopupHandle> ShowSheetAsync<TContent>(
         TContent content,
-        PopupOptions? options = null,
+        Action<Sheet>? configure = null,
         CancellationToken cancellationToken = default)
         where TContent : Control;
 
     Task<TResult?> ShowSheetForResultAsync<TResult, TContent>(
         TContent content,
-        PopupOptions? options = null,
+        Action<Sheet>? configure = null,
         CancellationToken cancellationToken = default)
         where TContent : Control, IPopupResultSource;
 
     Task<TResult?> ShowToastForResultAsync<TResult, TContent>(
         TContent content,
-        PopupOptions? options = null,
+        Action<Toast>? configure = null,
         CancellationToken cancellationToken = default)
         where TContent : Control, IPopupResultSource;
 
     Task<TResult?> ShowFloaterForResultAsync<TResult, TContent>(
         TContent content,
-        PopupOptions? options = null,
+        Action<Floater>? configure = null,
         CancellationToken cancellationToken = default)
         where TContent : Control, IPopupResultSource;
 
@@ -163,30 +163,20 @@ public interface IDialogService
 `IPopupHandle` can be used to dismiss a specific popup instance:
 
 ```csharp
-var handle = await dialogService.ShowToastAsync(new ToastContent(), new PopupOptions
-{
-    Duration = TimeSpan.FromSeconds(2),
-});
+var handle = await dialogService.ShowToastAsync(
+    new ToastContent(),
+    toast =>
+    {
+        toast.Location = ToastLocation.Bottom;
+        toast.ClickOutsideToDismiss = true;
+    });
 
 await handle.DismissAsync();
 ```
 
 For result-based popups, implement `IPopupResultSource` on your content and use the corresponding `Show*ForResultAsync` method.
 
-`PopupOptions` supports:
-
-| Property | Description |
-| --- | --- |
-| DismissOnBackdropTap | Whether tapping the mask dismisses the popup |
-| ShowBackdrop | Explicitly show/hide the background mask |
-| BackdropColor | Background mask brush |
-| ClickToDismiss | Whether tapping/clicking popup content dismisses it (toast/floater) |
-| AnimationDuration | Override popup animation duration |
-| Duration | Optional auto-dismiss duration (typically for toasts) |
-| SnapPoint | Sheet max-height snap point (fraction or absolute pixels) |
-| Detents | Sheet detents (fraction or absolute pixels) |
-| InitialDetent | Initial sheet detent (fraction or absolute pixels) |
-| Placement | `Top`/`Bottom` placement for toast/floater |
+Configuration for `Show*Async` and `Show*ForResultAsync` is done by passing the same popup-specific configure actions used by `Open*` methods (`Action<Sheet>`, `Action<Toast>`, `Action<Floater>`).
 
 ### Common
 

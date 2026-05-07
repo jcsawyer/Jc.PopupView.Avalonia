@@ -12,14 +12,14 @@ public interface IDialogService
     void OpenFloater<TContent>(TContent content, Action<Floater>? configure = null) where TContent : Control;
     void CloseFloater<TContent>(TContent content) where TContent : Control;
 
-    Task<IPopupHandle> ShowToastAsync<TContent>(TContent content, PopupOptions? options = null, CancellationToken cancellationToken = default) where TContent : Control;
-    Task<IPopupHandle> ShowFloaterAsync<TContent>(TContent content, PopupOptions? options = null, CancellationToken cancellationToken = default) where TContent : Control;
-    Task<IPopupHandle> ShowSheetAsync<TContent>(TContent content, PopupOptions? options = null, CancellationToken cancellationToken = default) where TContent : Control;
-    Task<TResult?> ShowToastForResultAsync<TResult, TContent>(TContent content, PopupOptions? options = null, CancellationToken cancellationToken = default)
+    Task<IPopupHandle> ShowToastAsync<TContent>(TContent content, Action<Toast>? configure = null, CancellationToken cancellationToken = default) where TContent : Control;
+    Task<IPopupHandle> ShowFloaterAsync<TContent>(TContent content, Action<Floater>? configure = null, CancellationToken cancellationToken = default) where TContent : Control;
+    Task<IPopupHandle> ShowSheetAsync<TContent>(TContent content, Action<Sheet>? configure = null, CancellationToken cancellationToken = default) where TContent : Control;
+    Task<TResult?> ShowToastForResultAsync<TResult, TContent>(TContent content, Action<Toast>? configure = null, CancellationToken cancellationToken = default)
         where TContent : Control, IPopupResultSource;
-    Task<TResult?> ShowFloaterForResultAsync<TResult, TContent>(TContent content, PopupOptions? options = null, CancellationToken cancellationToken = default)
+    Task<TResult?> ShowFloaterForResultAsync<TResult, TContent>(TContent content, Action<Floater>? configure = null, CancellationToken cancellationToken = default)
         where TContent : Control, IPopupResultSource;
-    Task<TResult?> ShowSheetForResultAsync<TResult, TContent>(TContent content, PopupOptions? options = null, CancellationToken cancellationToken = default)
+    Task<TResult?> ShowSheetForResultAsync<TResult, TContent>(TContent content, Action<Sheet>? configure = null, CancellationToken cancellationToken = default)
         where TContent : Control, IPopupResultSource;
     Task<bool> DismissTopMostAsync(CancellationToken cancellationToken = default);
 }

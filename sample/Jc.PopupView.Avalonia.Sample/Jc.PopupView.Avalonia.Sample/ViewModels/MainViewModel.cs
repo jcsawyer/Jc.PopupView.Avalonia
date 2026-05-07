@@ -129,10 +129,10 @@ public class MainViewModel : ViewModelBase
             var service = new DialogService();
             var result = await service.ShowSheetForResultAsync<string, ResultSheet>(
                 new ResultSheet(),
-                new PopupOptions
+                sheet =>
                 {
-                    Detents = [0.78, 0.56, 0.36],
-                    InitialDetent = 0.56,
+                    sheet.Detents = [0.78, 0.56, 0.36];
+                    sheet.InitialDetent = 0.56;
                 });
 
             LastSheetResult = result ?? "cancelled";
@@ -151,12 +151,12 @@ public class MainViewModel : ViewModelBase
             var service = new DialogService();
             var result = await service.ShowToastForResultAsync<string, Toast2Result>(
                 new Toast2Result(),
-                new PopupOptions
+                toast =>
                 {
-                    Placement = PopupPlacement.Bottom,
-                    DismissOnBackdropTap = false,
-                    ShowBackdrop = true,
-                    ClickToDismiss = false,
+                    toast.Location = ToastLocation.Bottom;
+                    toast.ClickOutsideToDismiss = false;
+                    toast.ClickToDismiss = false;
+                    toast.ShowBackgroundMask = true;
                 });
             LastToastResult = result ?? "cancelled";
         });
@@ -168,12 +168,12 @@ public class MainViewModel : ViewModelBase
             var service = new DialogService();
             var result = await service.ShowFloaterForResultAsync<string, Toast2Result>(
                 new Toast2Result(),
-                new PopupOptions
+                floater =>
                 {
-                    Placement = PopupPlacement.Bottom,
-                    DismissOnBackdropTap = false,
-                    ClickToDismiss = false,
-                    ShowBackdrop = true,
+                    floater.Location = FloaterLocation.Bottom;
+                    floater.ClickOutsideToDismiss = false;
+                    floater.ClickToDismiss = false;
+                    floater.ShowBackgroundMask = true;
                 });
             LastFloaterResult = result ?? "cancelled";
         });

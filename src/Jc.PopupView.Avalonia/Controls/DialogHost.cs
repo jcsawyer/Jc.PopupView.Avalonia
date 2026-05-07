@@ -190,8 +190,7 @@ public class DialogHost : TemplatedControl, IPopupOverlayHost
     public async Task<IPopupHandle> ShowAsync(
         PopupKind kind,
         string route,
-        Control content,
-        PopupOptions? options,
+        IDialog dialog,
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -200,7 +199,7 @@ public class DialogHost : TemplatedControl, IPopupOverlayHost
         OverlayEntry? entry = null;
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
-            entry = CreateEntry(id, kind, route, content, options);
+            entry = new OverlayEntry(id, route, dialog, kind, ResolveAnimationDuration(dialog));
             AddEntry(entry);
             _stack.Add(entry);
         });
@@ -209,23 +208,17 @@ public class DialogHost : TemplatedControl, IPopupOverlayHost
         var handle = new InMemoryPopupHandle(id, _ => DismissInternalAsync(id, CancellationToken.None));
         localEntry.Handle = handle;
 
-        if (kind == PopupKind.Toast && options?.Duration is TimeSpan duration)
-        {
-            _ = AutoDismissAsync(handle, duration);
-        }
-
         return handle;
     }
 
     public async Task<object?> ShowForResultAsync(
         PopupKind kind,
         string route,
-        Control content,
-        PopupOptions? options,
+        IDialog dialog,
         CancellationToken cancellationToken = default)
     {
-        var handle = await ShowAsync(kind, route, content, options, cancellationToken);
-        if (content is IPopupResultSource resultSource)
+        var handle = await ShowAsync(kind, route, dialog, cancellationToken);
+        if (dialog.Content is IPopupResultSource resultSource)
         {
             var result = await resultSource.WaitForResultAsync(cancellationToken);
             await handle.DismissAsync(cancellationToken);
@@ -246,12 +239,6 @@ public class DialogHost : TemplatedControl, IPopupOverlayHost
 
         await handle.DismissAsync(cancellationToken);
         return true;
-    }
-
-    private static async Task AutoDismissAsync(IPopupHandle handle, TimeSpan duration)
-    {
-        await Task.Delay(duration);
-        await handle.DismissAsync();
     }
 
     private async Task DismissInternalAsync(Guid id, CancellationToken cancellationToken)
@@ -279,99 +266,15 @@ public class DialogHost : TemplatedControl, IPopupOverlayHost
         await Dispatcher.UIThread.InvokeAsync(() => { _stack.RemoveAll(s => s.Id == id); });
     }
 
-    private OverlayEntry CreateEntry(Guid id, PopupKind kind, string route, Control content, PopupOptions? options)
+    private static TimeSpan ResolveAnimationDuration(IDialog dialog)
     {
-        return kind switch
+        return dialog switch
         {
-            PopupKind.Sheet => CreateSheetEntry(id, route, content, options),
-            PopupKind.Toast => CreateToastEntry(id, route, content, options),
-            PopupKind.Floater => CreateFloaterEntry(id, route, content, options),
-            _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null),
+            Sheet sheet => sheet.AnimationDuration,
+            Toast toast => toast.AnimationDuration,
+            Floater floater => floater.AnimationDuration,
+            _ => TimeSpan.FromMilliseconds(220),
         };
-    }
-
-    private OverlayEntry CreateSheetEntry(Guid id, string route, Control content, PopupOptions? options)
-    {
-        var sheet = new Sheet
-        {
-            Content = content,
-            ClickOutsideToDismiss = options?.DismissOnBackdropTap ?? true,
-            ShowBackgroundMask = options?.ShowBackdrop ?? true,
-            DetachOnClose = true,
-            Detents = options?.ToDetentList(),
-            InitialDetent = options?.InitialDetent,
-            SnapPoint = options?.SnapPoint,
-        };
-
-        if (options?.BackdropColor is { } sheetBackdropColor)
-        {
-            sheet.MaskColor = sheetBackdropColor;
-        }
-
-        if (options?.AnimationDuration is TimeSpan sheetDuration)
-        {
-            sheet.AnimationDuration = sheetDuration;
-        }
-
-        return new OverlayEntry(id, route, sheet, PopupKind.Sheet, sheet.AnimationDuration);
-    }
-
-    private OverlayEntry CreateToastEntry(Guid id, string route, Control content, PopupOptions? options)
-    {
-        var toast = new Toast
-        {
-            Content = content,
-            ClickOutsideToDismiss = options?.DismissOnBackdropTap ?? true,
-            ShowBackgroundMask = options?.ShowBackdrop ?? false,
-            DetachOnClose = true,
-            Location = options?.Placement == PopupPlacement.Bottom ? ToastLocation.Bottom : ToastLocation.Top,
-        };
-
-        if (options?.BackdropColor is { } toastBackdropColor)
-        {
-            toast.MaskColor = toastBackdropColor;
-        }
-
-        if (options?.ClickToDismiss is bool toastClickToDismiss)
-        {
-            toast.ClickToDismiss = toastClickToDismiss;
-        }
-
-        if (options?.AnimationDuration is TimeSpan toastDuration)
-        {
-            toast.AnimationDuration = toastDuration;
-        }
-
-        return new OverlayEntry(id, route, toast, PopupKind.Toast, toast.AnimationDuration);
-    }
-
-    private OverlayEntry CreateFloaterEntry(Guid id, string route, Control content, PopupOptions? options)
-    {
-        var floater = new Floater
-        {
-            Content = content,
-            ClickOutsideToDismiss = options?.DismissOnBackdropTap ?? true,
-            ShowBackgroundMask = options?.ShowBackdrop ?? false,
-            DetachOnClose = true,
-            Location = options?.Placement == PopupPlacement.Bottom ? FloaterLocation.Bottom : FloaterLocation.Top,
-        };
-
-        if (options?.BackdropColor is { } floaterBackdropColor)
-        {
-            floater.MaskColor = floaterBackdropColor;
-        }
-
-        if (options?.ClickToDismiss is bool floaterClickToDismiss)
-        {
-            floater.ClickToDismiss = floaterClickToDismiss;
-        }
-
-        if (options?.AnimationDuration is TimeSpan floaterDuration)
-        {
-            floater.AnimationDuration = floaterDuration;
-        }
-
-        return new OverlayEntry(id, route, floater, PopupKind.Floater, floater.AnimationDuration);
     }
 
     private void AddEntry(OverlayEntry entry)

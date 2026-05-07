@@ -85,50 +85,97 @@ public sealed class DialogService : IDialogService
         floater?.Close();
     }
 
-    public Task<IPopupHandle> ShowToastAsync<TContent>(TContent content, PopupOptions? options = null, CancellationToken cancellationToken = default)
+    public Task<IPopupHandle> ShowToastAsync<TContent>(TContent content, Action<Toast>? configure = null, CancellationToken cancellationToken = default)
         where TContent : Control
-        => _presenter.ShowAsync(PopupKind.Toast, typeof(TContent).Name, content, options, cancellationToken);
+    {
+        var toast = new Toast
+        {
+            Content = content,
+            DetachOnClose = true,
+        };
+        configure?.Invoke(toast);
+        return _presenter.ShowAsync(PopupKind.Toast, typeof(TContent).Name, toast, cancellationToken);
+    }
 
-    public Task<IPopupHandle> ShowFloaterAsync<TContent>(TContent content, PopupOptions? options = null, CancellationToken cancellationToken = default)
+    public Task<IPopupHandle> ShowFloaterAsync<TContent>(TContent content, Action<Floater>? configure = null, CancellationToken cancellationToken = default)
         where TContent : Control
-        => _presenter.ShowAsync(PopupKind.Floater, typeof(TContent).Name, content, options, cancellationToken);
+    {
+        var floater = new Floater
+        {
+            Content = content,
+            DetachOnClose = true,
+        };
+        configure?.Invoke(floater);
+        return _presenter.ShowAsync(PopupKind.Floater, typeof(TContent).Name, floater, cancellationToken);
+    }
 
-    public Task<IPopupHandle> ShowSheetAsync<TContent>(TContent content, PopupOptions? options = null, CancellationToken cancellationToken = default)
+    public Task<IPopupHandle> ShowSheetAsync<TContent>(TContent content, Action<Sheet>? configure = null, CancellationToken cancellationToken = default)
         where TContent : Control
-        => _presenter.ShowAsync(PopupKind.Sheet, typeof(TContent).Name, content, options, cancellationToken);
+    {
+        var sheet = new Sheet
+        {
+            Content = content,
+            DetachOnClose = true,
+        };
+        configure?.Invoke(sheet);
+        return _presenter.ShowAsync(PopupKind.Sheet, typeof(TContent).Name, sheet, cancellationToken);
+    }
 
     public Task<TResult?> ShowToastForResultAsync<TResult, TContent>(
         TContent content,
-        PopupOptions? options = null,
+        Action<Toast>? configure = null,
         CancellationToken cancellationToken = default)
         where TContent : Control, IPopupResultSource
-        => ShowForResultAsync<TResult, TContent>(PopupKind.Toast, content, options, cancellationToken);
+    {
+        var toast = new Toast
+        {
+            Content = content,
+            DetachOnClose = true,
+        };
+        configure?.Invoke(toast);
+        return ShowForResultAsync<TResult>(PopupKind.Toast, typeof(TContent).Name, toast, cancellationToken);
+    }
 
     public Task<TResult?> ShowFloaterForResultAsync<TResult, TContent>(
         TContent content,
-        PopupOptions? options = null,
+        Action<Floater>? configure = null,
         CancellationToken cancellationToken = default)
         where TContent : Control, IPopupResultSource
-        => ShowForResultAsync<TResult, TContent>(PopupKind.Floater, content, options, cancellationToken);
+    {
+        var floater = new Floater
+        {
+            Content = content,
+            DetachOnClose = true,
+        };
+        configure?.Invoke(floater);
+        return ShowForResultAsync<TResult>(PopupKind.Floater, typeof(TContent).Name, floater, cancellationToken);
+    }
 
     public Task<TResult?> ShowSheetForResultAsync<TResult, TContent>(
         TContent content,
-        PopupOptions? options = null,
+        Action<Sheet>? configure = null,
         CancellationToken cancellationToken = default)
         where TContent : Control, IPopupResultSource
-        => ShowForResultAsync<TResult, TContent>(PopupKind.Sheet, content, options, cancellationToken);
+    {
+        var sheet = new Sheet
+        {
+            Content = content,
+            DetachOnClose = true,
+        };
+        configure?.Invoke(sheet);
+        return ShowForResultAsync<TResult>(PopupKind.Sheet, typeof(TContent).Name, sheet, cancellationToken);
+    }
 
     public Task<bool> DismissTopMostAsync(CancellationToken cancellationToken = default)
         => _presenter.DismissTopMostAsync(cancellationToken);
 
-    private async Task<TResult?> ShowForResultAsync<TResult, TContent>(
+    private async Task<TResult?> ShowForResultAsync<TResult>(
         PopupKind kind,
-        TContent content,
-        PopupOptions? options,
+        string route,
+        IDialog dialog,
         CancellationToken cancellationToken)
-        where TContent : Control
     {
-        var result = await _presenter.ShowForResultAsync(kind, typeof(TContent).Name, content, options, cancellationToken)
+        var result = await _presenter.ShowForResultAsync(kind, route, dialog, cancellationToken)
             .ConfigureAwait(false);
 
         if (result is IPopupHandle)
