@@ -117,11 +117,60 @@ public interface IDialogService
         where TContent : Control;
     void CloseFloater<TContent>(TContent content)
         where TContent : Control;
-        
+
+    Task<IPopupHandle> ShowToastAsync<TContent>(
+        TContent content,
+        PopupOptions? options = null,
+        CancellationToken cancellationToken = default)
+        where TContent : Control;
+
+    Task<IPopupHandle> ShowFloaterAsync<TContent>(
+        TContent content,
+        PopupOptions? options = null,
+        CancellationToken cancellationToken = default)
+        where TContent : Control;
+
+    Task<IPopupHandle> ShowSheetAsync<TContent>(
+        TContent content,
+        PopupOptions? options = null,
+        CancellationToken cancellationToken = default)
+        where TContent : Control;
+
+    Task<TResult?> ShowSheetForResultAsync<TResult, TContent>(
+        TContent content,
+        PopupOptions? options = null,
+        CancellationToken cancellationToken = default)
+        where TContent : Control, IPopupResultSource;
+
+    Task<bool> DismissTopMostAsync(CancellationToken cancellationToken = default);
 }
 ```
 
-Each open method allows you to configure the relevant control directly before opening. To close a popup, you must pass in a reference to the control the popup is displaying (the same reference passed into the open method).
+`Open*`/`Close*` methods remain available for direct control-based usage. The new async `Show*Async` APIs provide transient-style handles, options, and top-most dismissal.
+
+`IPopupHandle` can be used to dismiss a specific popup instance:
+
+```csharp
+var handle = await dialogService.ShowToastAsync(new ToastContent(), new PopupOptions
+{
+    Duration = TimeSpan.FromSeconds(2),
+});
+
+await handle.DismissAsync();
+```
+
+For result-based sheets, implement `IPopupResultSource` on your sheet content and use `ShowSheetForResultAsync`.
+
+`PopupOptions` supports:
+
+| Property | Description |
+| --- | --- |
+| DismissOnBackdropTap | Whether tapping the mask dismisses the popup |
+| Duration | Optional auto-dismiss duration (typically for toasts) |
+| SnapPoint | Sheet max-height snap point (fraction or absolute pixels) |
+| Detents | Sheet detents (fraction or absolute pixels) |
+| InitialDetent | Initial sheet detent (fraction or absolute pixels) |
+| Placement | `Top`/`Bottom` placement for toast/floater |
 
 ### Common
 
@@ -179,6 +228,9 @@ Sheets can be configured as:
 | ClickToDismiss | false | Attempting to set this on a sheet results in an invalid operation exception |
 | PillLocation | Internal | Location of the drag indicator pill (Internal or External) |
 | PillColor | | The color of the drag indicator pill |
+| Detents | null | Optional list of sheet detents (fractions or absolute heights) |
+| InitialDetent | null | Optional initial detent (fraction or absolute height) |
+| SnapPoint | null | Optional max-height snap point (fraction or absolute height) |
 
 ### Floaters
 
