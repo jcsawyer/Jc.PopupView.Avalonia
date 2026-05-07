@@ -1,5 +1,3 @@
-using Avalonia.Platform;
-
 namespace Jc.PopupView.Avalonia.Native;
 
 public interface INativeBottomSheet

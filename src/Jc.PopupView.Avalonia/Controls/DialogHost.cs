@@ -6,7 +6,6 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Metadata;
 using Avalonia.Threading;
-using Avalonia.VisualTree;
 using Jc.PopupView.Avalonia.Exceptions;
 using Jc.PopupView.Avalonia.Services;
 
