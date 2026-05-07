@@ -120,10 +120,20 @@ public class Sheet : DialogBase
     public static readonly StyledProperty<SheetScrollDirection> ScrollDirectionProperty = AvaloniaProperty.Register<Sheet, SheetScrollDirection>(
         nameof(ScrollDirection), defaultValue: SheetScrollDirection.Vertical);
 
+    public static readonly StyledProperty<SheetDragStartMode> DragStartModeProperty =
+        AvaloniaProperty.Register<Sheet, SheetDragStartMode>(
+            nameof(DragStartMode), defaultValue: SheetDragStartMode.FullSheet);
+
     public SheetScrollDirection ScrollDirection
     {
         get => GetValue(ScrollDirectionProperty);
         set => SetValue(ScrollDirectionProperty, value);
+    }
+
+    public SheetDragStartMode DragStartMode
+    {
+        get => GetValue(DragStartModeProperty);
+        set => SetValue(DragStartModeProperty, value);
     }
 
     public IBrush PillColor

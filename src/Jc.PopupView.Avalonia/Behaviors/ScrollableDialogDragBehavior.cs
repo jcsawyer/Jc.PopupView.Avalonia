@@ -35,10 +35,20 @@ internal sealed class ScrollableDialogDragBehavior : Behavior<Grid>
     public static readonly StyledProperty<TimeSpan> AnimationDurationProperty =
         AvaloniaProperty.Register<ScrollableDialogDragBehavior, TimeSpan>(nameof(AnimationDuration));
 
+    public static readonly StyledProperty<SheetDragStartMode> DragStartModeProperty =
+        AvaloniaProperty.Register<ScrollableDialogDragBehavior, SheetDragStartMode>(
+            nameof(DragStartMode), defaultValue: SheetDragStartMode.FullSheet);
+
     public TimeSpan AnimationDuration
     {
         get => GetValue(AnimationDurationProperty);
         set => SetValue(AnimationDurationProperty, value);
+    }
+
+    public SheetDragStartMode DragStartMode
+    {
+        get => GetValue(DragStartModeProperty);
+        set => SetValue(DragStartModeProperty, value);
     }
 
     protected override void OnAttached()
@@ -72,6 +82,11 @@ internal sealed class ScrollableDialogDragBehavior : Behavior<Grid>
         }
 
         if (!CanStartDrag(dragHandle, e))
+        {
+            return;
+        }
+
+        if (DragStartMode == SheetDragStartMode.TabBarOnly && !IsWithinTabBar(e.Source))
         {
             return;
         }
@@ -291,5 +306,33 @@ internal sealed class ScrollableDialogDragBehavior : Behavior<Grid>
     {
         var topLevel = TopLevel.GetTopLevel(reference);
         return topLevel is not null ? e.GetPosition(topLevel).Y : e.GetPosition(reference).Y;
+    }
+
+    private static bool IsTabBar(Control control)
+    {
+        return control.Name is "PART_InternalSheetPill" or "PART_ExternalSheetPill";
+    }
+
+    private bool IsWithinTabBar(object? source)
+    {
+        if (source is not Visual visual || AssociatedObject is null)
+        {
+            return false;
+        }
+
+        for (Visual? current = visual; current is not null; current = current.GetVisualParent() as Visual)
+        {
+            if (current is Control control && IsTabBar(control))
+            {
+                return true;
+            }
+
+            if (ReferenceEquals(current, AssociatedObject))
+            {
+                break;
+            }
+        }
+
+        return false;
     }
 }
