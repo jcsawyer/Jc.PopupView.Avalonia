@@ -15,6 +15,10 @@ public interface IDialogService
     Task<IPopupHandle> ShowToastAsync<TContent>(TContent content, PopupOptions? options = null, CancellationToken cancellationToken = default) where TContent : Control;
     Task<IPopupHandle> ShowFloaterAsync<TContent>(TContent content, PopupOptions? options = null, CancellationToken cancellationToken = default) where TContent : Control;
     Task<IPopupHandle> ShowSheetAsync<TContent>(TContent content, PopupOptions? options = null, CancellationToken cancellationToken = default) where TContent : Control;
+    Task<TResult?> ShowToastForResultAsync<TResult, TContent>(TContent content, PopupOptions? options = null, CancellationToken cancellationToken = default)
+        where TContent : Control, IPopupResultSource;
+    Task<TResult?> ShowFloaterForResultAsync<TResult, TContent>(TContent content, PopupOptions? options = null, CancellationToken cancellationToken = default)
+        where TContent : Control, IPopupResultSource;
     Task<TResult?> ShowSheetForResultAsync<TResult, TContent>(TContent content, PopupOptions? options = null, CancellationToken cancellationToken = default)
         where TContent : Control, IPopupResultSource;
     Task<bool> DismissTopMostAsync(CancellationToken cancellationToken = default);

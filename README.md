@@ -142,6 +142,18 @@ public interface IDialogService
         CancellationToken cancellationToken = default)
         where TContent : Control, IPopupResultSource;
 
+    Task<TResult?> ShowToastForResultAsync<TResult, TContent>(
+        TContent content,
+        PopupOptions? options = null,
+        CancellationToken cancellationToken = default)
+        where TContent : Control, IPopupResultSource;
+
+    Task<TResult?> ShowFloaterForResultAsync<TResult, TContent>(
+        TContent content,
+        PopupOptions? options = null,
+        CancellationToken cancellationToken = default)
+        where TContent : Control, IPopupResultSource;
+
     Task<bool> DismissTopMostAsync(CancellationToken cancellationToken = default);
 }
 ```
@@ -159,13 +171,17 @@ var handle = await dialogService.ShowToastAsync(new ToastContent(), new PopupOpt
 await handle.DismissAsync();
 ```
 
-For result-based sheets, implement `IPopupResultSource` on your sheet content and use `ShowSheetForResultAsync`.
+For result-based popups, implement `IPopupResultSource` on your content and use the corresponding `Show*ForResultAsync` method.
 
 `PopupOptions` supports:
 
 | Property | Description |
 | --- | --- |
 | DismissOnBackdropTap | Whether tapping the mask dismisses the popup |
+| ShowBackdrop | Explicitly show/hide the background mask |
+| BackdropColor | Background mask brush |
+| ClickToDismiss | Whether tapping/clicking popup content dismisses it (toast/floater) |
+| AnimationDuration | Override popup animation duration |
 | Duration | Optional auto-dismiss duration (typically for toasts) |
 | SnapPoint | Sheet max-height snap point (fraction or absolute pixels) |
 | Detents | Sheet detents (fraction or absolute pixels) |

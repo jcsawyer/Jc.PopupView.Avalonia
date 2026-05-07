@@ -97,6 +97,20 @@ public sealed class DialogService : IDialogService
         where TContent : Control
         => _presenter.ShowAsync(PopupKind.Sheet, typeof(TContent).Name, content, options, cancellationToken);
 
+    public Task<TResult?> ShowToastForResultAsync<TResult, TContent>(
+        TContent content,
+        PopupOptions? options = null,
+        CancellationToken cancellationToken = default)
+        where TContent : Control, IPopupResultSource
+        => ShowForResultAsync<TResult, TContent>(PopupKind.Toast, content, options, cancellationToken);
+
+    public Task<TResult?> ShowFloaterForResultAsync<TResult, TContent>(
+        TContent content,
+        PopupOptions? options = null,
+        CancellationToken cancellationToken = default)
+        where TContent : Control, IPopupResultSource
+        => ShowForResultAsync<TResult, TContent>(PopupKind.Floater, content, options, cancellationToken);
+
     public Task<TResult?> ShowSheetForResultAsync<TResult, TContent>(
         TContent content,
         PopupOptions? options = null,

@@ -296,11 +296,22 @@ public class DialogHost : TemplatedControl, IPopupOverlayHost
         {
             Content = content,
             ClickOutsideToDismiss = options?.DismissOnBackdropTap ?? true,
+            ShowBackgroundMask = options?.ShowBackdrop ?? true,
             DetachOnClose = true,
             Detents = options?.ToDetentList(),
             InitialDetent = options?.InitialDetent,
             SnapPoint = options?.SnapPoint,
         };
+
+        if (options?.BackdropColor is { } sheetBackdropColor)
+        {
+            sheet.MaskColor = sheetBackdropColor;
+        }
+
+        if (options?.AnimationDuration is TimeSpan sheetDuration)
+        {
+            sheet.AnimationDuration = sheetDuration;
+        }
 
         return new OverlayEntry(id, route, sheet, PopupKind.Sheet, sheet.AnimationDuration);
     }
@@ -311,9 +322,25 @@ public class DialogHost : TemplatedControl, IPopupOverlayHost
         {
             Content = content,
             ClickOutsideToDismiss = options?.DismissOnBackdropTap ?? true,
+            ShowBackgroundMask = options?.ShowBackdrop ?? false,
             DetachOnClose = true,
             Location = options?.Placement == PopupPlacement.Bottom ? ToastLocation.Bottom : ToastLocation.Top,
         };
+
+        if (options?.BackdropColor is { } toastBackdropColor)
+        {
+            toast.MaskColor = toastBackdropColor;
+        }
+
+        if (options?.ClickToDismiss is bool toastClickToDismiss)
+        {
+            toast.ClickToDismiss = toastClickToDismiss;
+        }
+
+        if (options?.AnimationDuration is TimeSpan toastDuration)
+        {
+            toast.AnimationDuration = toastDuration;
+        }
 
         return new OverlayEntry(id, route, toast, PopupKind.Toast, toast.AnimationDuration);
     }
@@ -324,9 +351,25 @@ public class DialogHost : TemplatedControl, IPopupOverlayHost
         {
             Content = content,
             ClickOutsideToDismiss = options?.DismissOnBackdropTap ?? true,
+            ShowBackgroundMask = options?.ShowBackdrop ?? false,
             DetachOnClose = true,
             Location = options?.Placement == PopupPlacement.Bottom ? FloaterLocation.Bottom : FloaterLocation.Top,
         };
+
+        if (options?.BackdropColor is { } floaterBackdropColor)
+        {
+            floater.MaskColor = floaterBackdropColor;
+        }
+
+        if (options?.ClickToDismiss is bool floaterClickToDismiss)
+        {
+            floater.ClickToDismiss = floaterClickToDismiss;
+        }
+
+        if (options?.AnimationDuration is TimeSpan floaterDuration)
+        {
+            floater.AnimationDuration = floaterDuration;
+        }
 
         return new OverlayEntry(id, route, floater, PopupKind.Floater, floater.AnimationDuration);
     }

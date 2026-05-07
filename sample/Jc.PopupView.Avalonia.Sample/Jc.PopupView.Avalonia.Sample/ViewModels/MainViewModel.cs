@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Jc.PopupView.Avalonia.Controls;
 using Jc.PopupView.Avalonia.Sample.Views.Sheets;
+using Jc.PopupView.Avalonia.Sample.Views.Toasts;
 using Jc.PopupView.Avalonia.Services;
 using ReactiveUI;
 
@@ -75,6 +76,14 @@ public class MainViewModel : ViewModelBase
     public ICommand OpenToast3Command { get; }
 
     public ICommand OpenToast4Command { get; }
+    public ICommand OpenToast5Command { get; }
+
+    private string? _lastToastResult;
+    public string? LastToastResult
+    {
+        get => _lastToastResult;
+        set => this.RaiseAndSetIfChanged(ref _lastToastResult, value);
+    }
     
     private bool _isFloater1Open;
     public bool IsFloater1Open
@@ -99,6 +108,14 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _isFloater3Open, value);
     }
     public ICommand OpenFloater3Command { get; }
+    public ICommand OpenFloater4Command { get; }
+
+    private string? _lastFloaterResult;
+    public string? LastFloaterResult
+    {
+        get => _lastFloaterResult;
+        set => this.RaiseAndSetIfChanged(ref _lastFloaterResult, value);
+    }
 
     public MainViewModel()
     {
@@ -129,8 +146,36 @@ public class MainViewModel : ViewModelBase
             new DialogService().OpenToast(
                 new TextBlock { Text = "Hello, from dynamic dialog!", Padding = new Thickness(10) },
                 toast => toast.Location = ToastLocation.Bottom));
+        OpenToast5Command = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var service = new DialogService();
+            var result = await service.ShowToastForResultAsync<string, Toast2Result>(
+                new Toast2Result(),
+                new PopupOptions
+                {
+                    Placement = PopupPlacement.Bottom,
+                    DismissOnBackdropTap = false,
+                    ShowBackdrop = true,
+                    ClickToDismiss = false,
+                });
+            LastToastResult = result ?? "cancelled";
+        });
         OpenFloater1Command = ReactiveCommand.Create(() => IsFloater1Open = true);
         OpenFloater2Command = ReactiveCommand.Create(() => IsFloater2Open = true);
         OpenFloater3Command = ReactiveCommand.Create(() => IsFloater3Open = true);
+        OpenFloater4Command = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var service = new DialogService();
+            var result = await service.ShowFloaterForResultAsync<string, Toast2Result>(
+                new Toast2Result(),
+                new PopupOptions
+                {
+                    Placement = PopupPlacement.Bottom,
+                    DismissOnBackdropTap = false,
+                    ClickToDismiss = false,
+                    ShowBackdrop = true,
+                });
+            LastFloaterResult = result ?? "cancelled";
+        });
     }
 }
