@@ -1,0 +1,105 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="https://github.com/jcsawyer"
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime">
+    <Design.PreviewWith>
+        <Grid ColumnDefinitions="320" RowDefinitions="420">
+            <controls:DialogHost Grid.Column="0">
+                <controls:DialogHost.Popups>
+                    <controls:Popup IsOpen="True" Position="Center">
+                        <Border Padding="16" MinWidth="220">
+                            <TextBlock Text="Center popup preview." />
+                        </Border>
+                    </controls:Popup>
+                    <controls:Popup IsOpen="True" Position="Bottom">
+                        <Border Padding="16" MinWidth="220">
+                            <TextBlock Text="Bottom popup preview." />
+                        </Border>
+                    </controls:Popup>
+                </controls:DialogHost.Popups>
+            </controls:DialogHost>
+        </Grid>
+    </Design.PreviewWith>
+
+    <SolidColorBrush x:Key="PopupBackground">#ffffff</SolidColorBrush>
+    <SolidColorBrush x:Key="PopupTextColor">#111111</SolidColorBrush>
+    <SolidColorBrush x:Key="PopupMaskColor">#5f000000</SolidColorBrush>
+    <CornerRadius x:Key="PopupCornerRadius">18</CornerRadius>
+    <system:TimeSpan x:Key="PopupAnimationDuration">0:0:0.22</system:TimeSpan>
+    <Thickness x:Key="PopupPadding">18</Thickness>
+    <Thickness x:Key="PopupMargin">18</Thickness>
+
+    <ControlTheme x:Key="{x:Type controls:Popup}" TargetType="controls:Popup">
+        <Setter Property="Background" Value="{DynamicResource PopupBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource PopupTextColor}" />
+        <Setter Property="MaskColor" Value="{DynamicResource PopupMaskColor}" />
+        <Setter Property="AnimationDuration" Value="{DynamicResource PopupAnimationDuration}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource PopupCornerRadius}" />
+        <Setter Property="ShowBackgroundMask" Value="True" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="ContentMargin" Value="{DynamicResource PopupMargin}" />
+        <Setter Property="Padding" Value="{DynamicResource PopupPadding}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid Name="PART_PopupRoot" IsHitTestVisible="{TemplateBinding IsOpen}">
+                    <Rectangle
+                        Name="PART_PopupMask"
+                        Fill="{TemplateBinding MaskColor}"
+                        IsVisible="{TemplateBinding ShowBackgroundMask}"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        Opacity="0" />
+
+                    <Border Name="PART_PopupContent"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Margin="{TemplateBinding ContentMargin}"
+                            Padding="{TemplateBinding Padding}"
+                            MaxWidth="560"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Opacity="0">
+                        <Border.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="0.92" ScaleY="0.92" />
+                                <TranslateTransform Y="0" />
+                            </TransformGroup>
+                        </Border.RenderTransform>
+
+                        <ContentPresenter
+                            Name="PART_ContentPresenter"
+                            TextWrapping="Wrap"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            Content="{TemplateBinding Content}" />
+                    </Border>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:open, ^:opening /template/ Border#PART_PopupContent">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:closed /template/ Border#PART_PopupContent">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style Selector="^:closing /template/ Border#PART_PopupContent">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:open[Position=Bottom] /template/ Border#PART_PopupContent, ^:opening[Position=Bottom] /template/ Border#PART_PopupContent">
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="MaxWidth" Value="680" />
+        </Style>
+
+        <Style Selector="^:closed[Position=Bottom] /template/ Border#PART_PopupContent, ^:closing[Position=Bottom] /template/ Border#PART_PopupContent">
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="MaxWidth" Value="680" />
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

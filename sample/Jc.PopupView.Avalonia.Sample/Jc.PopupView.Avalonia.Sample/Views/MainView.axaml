@@ -383,6 +383,40 @@
                             </Grid>
                         </Grid>
                     </Button>
+                    <TextBlock Classes="h1">Popups</TextBlock>
+                    <Button Classes="panel" Command="{Binding OpenPopup1Command}">
+                        <Grid ColumnSpacing="20" RowSpacing="10" ColumnDefinitions="Auto, *">
+                            <Border Grid.Column="0" Classes="icon">
+                                <Border HorizontalAlignment="Center" Width="25" VerticalAlignment="Center" Height="25" CornerRadius="3" />
+                            </Border>
+                            <Grid Grid.Column="1" RowDefinitions="Auto, Auto" ColumnDefinitions="*" VerticalAlignment="Center">
+                                <TextBlock Grid.Row="0" Classes="h2" Text="Popup version 1" />
+                                <TextBlock Grid.Row="1" Classes="p" Text="Default centered popup using scale in/out animation." />
+                            </Grid>
+                        </Grid>
+                    </Button>
+                    <Button Classes="panel" Command="{Binding OpenPopup2Command}">
+                        <Grid ColumnSpacing="20" RowSpacing="10" ColumnDefinitions="Auto, *">
+                            <Border Grid.Column="0" Classes="icon">
+                                <Border HorizontalAlignment="Center" Width="44" VerticalAlignment="Bottom" Height="20" Margin="0 0 0 3" CornerRadius="3 3 10 10" />
+                            </Border>
+                            <Grid Grid.Column="1" RowDefinitions="Auto, Auto" ColumnDefinitions="*" VerticalAlignment="Center">
+                                <TextBlock Grid.Row="0" Classes="h2" Text="Popup version 2" />
+                                <TextBlock Grid.Row="1" Classes="p" Text="Bottom popup using default slide in/out animation." />
+                            </Grid>
+                        </Grid>
+                    </Button>
+                    <Button Classes="panel" Command="{Binding OpenPopup3Command}">
+                        <Grid ColumnSpacing="20" RowSpacing="10" ColumnDefinitions="Auto, *">
+                            <Border Grid.Column="0" Classes="icon">
+                                <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="20" CornerRadius="3 3 10 10" />
+                            </Border>
+                            <Grid Grid.Column="1" RowDefinitions="Auto, Auto" ColumnDefinitions="*" VerticalAlignment="Center">
+                                <TextBlock Grid.Row="0" Classes="h2" Text="Popup version 3" />
+                                <TextBlock Grid.Row="1" Classes="p" Text="Bottom popup with slide-in and scale-out animation." />
+                            </Grid>
+                        </Grid>
+                    </Button>
                 </StackPanel>
             </ScrollViewer>
             <popup:DialogHost.Sheets>

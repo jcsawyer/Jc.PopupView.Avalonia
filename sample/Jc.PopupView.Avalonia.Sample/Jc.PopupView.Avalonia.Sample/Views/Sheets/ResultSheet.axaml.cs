@@ -33,9 +33,9 @@ public partial class ResultSheet : UserControl, IPopupResultSource
         _result.TrySetResult(null);
     }
 
-    private void OnArchiveClick(object? sender, RoutedEventArgs e)
+    private async void OnNestedClick(object? sender, RoutedEventArgs e)
     {
-        _result.TrySetResult("archive");
+        await new DialogService().ShowSheetAsync(new TextBlock { Text = "Nested sheet!" }, sheet => sheet.Detents = [0.36]);
     }
 
     private void OnImportantClick(object? sender, RoutedEventArgs e)

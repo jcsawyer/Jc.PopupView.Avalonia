@@ -1,7 +1,9 @@
 ﻿using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media;
 using Jc.PopupView.Avalonia.Controls;
+using Jc.PopupView.Avalonia.Sample.Views.Popups;
 using Jc.PopupView.Avalonia.Sample.Views.Sheets;
 using Jc.PopupView.Avalonia.Sample.Views.Toasts;
 using Jc.PopupView.Avalonia.Services;
@@ -119,6 +121,9 @@ public class MainViewModel : ViewModelBase
     }
     public ICommand OpenFloater3Command { get; }
     public ICommand OpenFloater4Command { get; }
+    public ICommand OpenPopup1Command { get; }
+    public ICommand OpenPopup2Command { get; }
+    public ICommand OpenPopup3Command { get; }
 
     private string? _lastFloaterResult;
     public string? LastFloaterResult
@@ -188,5 +193,32 @@ public class MainViewModel : ViewModelBase
                 });
             LastFloaterResult = result ?? "cancelled";
         });
+
+        OpenPopup1Command = ReactiveCommand.Create(() =>
+            new DialogService().OpenPopup(
+                new Popup1(),
+                popup => { popup.ClickOutsideToDismiss = true; }));
+
+        OpenPopup2Command = ReactiveCommand.Create(() =>
+            new DialogService().OpenPopup(
+                new Popup2(), popup =>
+                {
+                    popup.Position = PopupPosition.Bottom;
+                    popup.OpenAnimationType = PopupAnimationType.Slide;
+                    popup.CloseAnimationType = PopupAnimationType.Scale;
+                    popup.ClickOutsideToDismiss = false;
+                }));
+
+        OpenPopup3Command = ReactiveCommand.Create(() =>
+            new DialogService().OpenPopup(
+                new Popup3(), popup =>
+                {
+                    popup.ContentMargin = new Thickness(0);
+                    popup.CornerRadius = new CornerRadius(18, 0);
+                    popup.Position = PopupPosition.Bottom;
+                    popup.OpenAnimationType = PopupAnimationType.Slide;
+                    popup.CloseAnimationType = PopupAnimationType.Slide;
+                    popup.ClickOutsideToDismiss = true;
+                }));
     }
 }
