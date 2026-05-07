@@ -1,6 +1,6 @@
 using Avalonia;
+using Avalonia.Animation;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -13,16 +13,18 @@ namespace Jc.PopupView.Avalonia.Behaviors;
 
 internal sealed class ScrollableDialogDragBehavior : Behavior<Grid>
 {
-    private IDialog _dialog;
+    private Sheet? _sheet;
     private bool _isDragging;
-    private Point _dragStart;
-    private Point _lastDrag;
-    private Rect? _dialogSize;
-    private int? _snapBackThreshold;
+    private bool _hasPendingDrag;
+    private int? _activePointerId;
+    private ScrollViewer? _dragScrollViewer;
+    private bool _scrollWasAtTopOnPointerDown;
+    private double _dragStartY;
+    private double _dragOriginY;
+    private Transitions? _dragTransitions;
 
     public static readonly StyledProperty<bool> ClickToDismissProperty =
-        AvaloniaProperty.Register<ScrollableDialogDragBehavior, bool>(
-            nameof(ClickToDismiss));
+        AvaloniaProperty.Register<ScrollableDialogDragBehavior, bool>(nameof(ClickToDismiss));
 
     public bool ClickToDismiss
     {
@@ -31,8 +33,7 @@ internal sealed class ScrollableDialogDragBehavior : Behavior<Grid>
     }
 
     public static readonly StyledProperty<TimeSpan> AnimationDurationProperty =
-        AvaloniaProperty.Register<ScrollableDialogDragBehavior, TimeSpan>(
-            nameof(AnimationDuration));
+        AvaloniaProperty.Register<ScrollableDialogDragBehavior, TimeSpan>(nameof(AnimationDuration));
 
     public TimeSpan AnimationDuration
     {
@@ -43,187 +44,252 @@ internal sealed class ScrollableDialogDragBehavior : Behavior<Grid>
     protected override void OnAttached()
     {
         base.OnAttached();
-
         if (AssociatedObject is { } grid)
         {
-            grid.AddHandler(InputElement.PointerPressedEvent, GridOnPointerPressed, handledEventsToo: false,
-                routes: RoutingStrategies.Tunnel);
-        }
-    }
-
-    protected override void OnDetaching()
-    {
-        base.OnDetaching();
-
-        if (TopLevel.GetTopLevel(AssociatedObject) is { } topLevel)
-        {
-            topLevel.SizeChanged -= TopLevelOnSizeChanged;
+            grid.AddHandler(InputElement.PointerPressedEvent, OnPointerPressed, RoutingStrategies.Tunnel, true);
+            grid.AddHandler(InputElement.PointerMovedEvent, OnPointerMoved, RoutingStrategies.Tunnel, true);
+            grid.AddHandler(InputElement.PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Tunnel, true);
+            grid.AddHandler(InputElement.PointerCaptureLostEvent, OnPointerCaptureLost, RoutingStrategies.Tunnel, true);
         }
     }
 
     protected override void OnLoaded()
     {
         base.OnLoaded();
-        if (AssociatedObject.FindAncestorOfType<IDialog>() is not { } dialog)
+        _sheet = AssociatedObject?.FindAncestorOfType<Sheet>();
+        if (_sheet is null)
         {
             throw new InvalidDialogDragBehaviorControl();
         }
-
-        _dialog = dialog;
-
-        _dialogSize = AssociatedObject?.GetTransformedBounds()?.Bounds;
-        _snapBackThreshold = _dialogSize?.Height is { } height ? (int)(height * 0.3) : null;
-
-        if (TopLevel.GetTopLevel(AssociatedObject) is { } topLevel)
-        {
-            _dialogSize = AssociatedObject?.GetTransformedBounds()?.Bounds;
-            topLevel.SizeChanged += TopLevelOnSizeChanged;
-        }
     }
 
-    private void TopLevelOnSizeChanged(object? sender, SizeChangedEventArgs e)
+    private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        _dialogSize = AssociatedObject?.GetTransformedBounds()?.Bounds;
-        _snapBackThreshold = _dialogSize?.Height is { } height ? (int)(height * 0.3) : null;
-    }
-
-    private void GridOnPointerPressed(object? sender, PointerPressedEventArgs e)
-    {
-        if (!_dialog.IsOpen)
+        var grid = AssociatedObject;
+        if (_sheet is null || grid is null || !_sheet.IsOpen || sender is not Control dragHandle)
         {
             return;
         }
 
-        if (!e.GetCurrentPoint(AssociatedObject).Properties.IsLeftButtonPressed)
-        {
-            return;
-        }
-
-        if (IsInteractiveControl(e.Source as Visual))
-        {
-            // Let the underlying control handle the event if it's an interactive control
-            return;
-        }
-        
-        _isDragging = true;
-        _dragStart = e.GetPosition(AssociatedObject);
-        _lastDrag = _dragStart;
-        e.Pointer.Capture(AssociatedObject);
-
-        if (AssociatedObject is { } grid)
-        {
-            grid.AddHandler(InputElement.PointerReleasedEvent, GridOnPointerReleased, handledEventsToo: false,
-                routes: RoutingStrategies.Tunnel);
-            grid.AddHandler(InputElement.PointerMovedEvent, GridOnPointerMoved, handledEventsToo: false,
-                routes: RoutingStrategies.Tunnel);
-            grid.AddHandler(InputElement.PointerCaptureLostEvent, GridOnPointerCaptureLost, handledEventsToo: false,
-                routes: RoutingStrategies.Tunnel);
-        }
-    }
-    
-    private static bool IsInteractiveControl(Visual? visual)
-    {
-        while (visual is not null)
-        {
-            if (visual is InputElement { Focusable: true })
-                return true;
-
-            // Add explicit checks for controls where Focusable might be false by default
-            if (visual is ListBoxItem or ComboBoxItem)
-                return true;
-
-            visual = visual.GetVisualParent();
-        }
-        return false;
-    }
-
-    private void GridOnPointerReleased(object? sender, PointerReleasedEventArgs e)
-    {
-        PointerReleasedAndLost();
-    }
-
-    private void GridOnPointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
-    {
-        PointerReleasedAndLost();
-    }
-
-    private void PointerReleasedAndLost()
-    {
-        if (AssociatedObject is { } grid)
-        {
-            grid.RemoveHandler(InputElement.PointerReleasedEvent, GridOnPointerReleased);
-            grid.RemoveHandler(InputElement.PointerMovedEvent, GridOnPointerMoved);
-            grid.RemoveHandler(InputElement.PointerCaptureLostEvent, GridOnPointerCaptureLost);
-        }
-
-        if (!_isDragging)
+        if (!CanStartDrag(dragHandle, e))
         {
             return;
         }
 
         _isDragging = false;
+        _hasPendingDrag = true;
+        _activePointerId = e.Pointer.Id;
+        _dragScrollViewer = FindAncestorScrollViewer(e.Source);
+        _scrollWasAtTopOnPointerDown = _dragScrollViewer is null || IsScrolledToTop(_dragScrollViewer);
+        _dragStartY = GetPointerY(e, grid);
 
-        if (ClickToDismiss)
+        if (grid.RenderTransform is TranslateTransform translate)
         {
-            _dialog.Close();
-            return;
-        }
-
-        if (AssociatedObject?.RenderTransform is not TranslateTransform translate)
-        {
-            return;
-        }
-
-        if (_snapBackThreshold is not null)
-        {
-            var isOpen = !(translate.Y > _snapBackThreshold);
-            if (isOpen)
-            {
-                _dialog.IsOpen = true;
-            }
-            else
-            {
-                _dialog.Close();
-            }
+            _dragOriginY = Math.Max(0, translate.Y);
         }
     }
 
-    private void GridOnPointerMoved(object? sender, PointerEventArgs e)
+    private void OnPointerMoved(object? sender, PointerEventArgs e)
     {
+        var grid = AssociatedObject;
+        if (_sheet is null || grid is null || sender is not Control dragHandle)
+        {
+            return;
+        }
+
+        if (_activePointerId is not null && _activePointerId != e.Pointer.Id)
+        {
+            return;
+        }
+
         if (!_isDragging)
         {
-            return;
-        }
-
-        var currentPos = e.GetPosition(AssociatedObject);
-        var deltaY = currentPos.Y - _dragStart.Y;
-
-        if (AssociatedObject?.RenderTransform is not TranslateTransform translate)
-        {
-            return;
-        }
-
-        if (sender is Grid grid && grid.GetVisualDescendants().OfType<ScrollViewer>().FirstOrDefault() is
-                { } scrollViewer)
-        {
-            var scrollViewerDelta = currentPos.Y - _lastDrag.Y;
-            if (scrollViewer.Offset.Y > 0 || scrollViewerDelta < 0)
+            if (!_hasPendingDrag || grid.RenderTransform is not TranslateTransform pendingTranslate)
             {
-                e.Pointer.Capture(null);
-                if (translate.Y > 0)
-                {
-                    _dialog.IsOpen = true;
-                }
-
                 return;
+            }
+
+            if (!IsPointerStillPressed(dragHandle, e))
+            {
+                ResetTracking();
+                return;
+            }
+
+            var dragDelta = GetPointerY(e, grid) - _dragStartY;
+            if (dragDelta <= 6)
+            {
+                return;
+            }
+
+            if (!_scrollWasAtTopOnPointerDown)
+            {
+                return;
+            }
+
+            if (_dragScrollViewer is not null && !IsScrolledToTop(_dragScrollViewer))
+            {
+                return;
+            }
+
+            _isDragging = true;
+            _hasPendingDrag = false;
+            _sheet.BeginDrag();
+            _dragOriginY = Math.Max(0, pendingTranslate.Y);
+            _dragStartY = GetPointerY(e, grid);
+            _dragTransitions = pendingTranslate.Transitions;
+            pendingTranslate.Transitions = null;
+            e.Pointer.Capture(dragHandle);
+            e.Handled = true;
+        }
+
+        if (grid.RenderTransform is not TranslateTransform translate)
+        {
+            return;
+        }
+
+        var delta = GetPointerY(e, grid) - _dragStartY;
+        var offset = Math.Clamp(_dragOriginY + delta, _sheet.GetMinDetentOffset(), _sheet.GetCloseOffset());
+        translate.Y = offset;
+        _sheet.SetMaskFromOffset(offset);
+        e.Handled = true;
+    }
+
+    private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (sender is not Control dragHandle)
+        {
+            return;
+        }
+
+        if (_activePointerId != e.Pointer.Id)
+        {
+            return;
+        }
+
+        if (!_isDragging)
+        {
+            ResetTracking();
+            return;
+        }
+
+        FinishDrag(dragHandle, e.Pointer);
+        e.Handled = true;
+    }
+
+    private void OnPointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
+    {
+        if (sender is not Control dragHandle)
+        {
+            return;
+        }
+
+        if (_isDragging)
+        {
+            FinishDrag(dragHandle, null);
+            return;
+        }
+
+        ResetTracking();
+    }
+
+    private void FinishDrag(Control dragHandle, IPointer? pointer)
+    {
+        var grid = AssociatedObject;
+        if (_sheet is null || grid is null || grid.RenderTransform is not TranslateTransform translate)
+        {
+            ResetTracking();
+            return;
+        }
+
+        _sheet.EndDrag();
+
+        _isDragging = false;
+        _hasPendingDrag = false;
+        _dragScrollViewer = null;
+        _activePointerId = null;
+        pointer?.Capture(null);
+
+        translate.Transitions = _dragTransitions ??
+            [
+                new DoubleTransition
+                {
+                    Property = TranslateTransform.YProperty,
+                    Duration = AnimationDuration,
+                    Easing = _sheet.Easing,
+                },
+            ];
+
+        var maxOffset = _sheet.GetCloseOffset();
+        var lowestDetent = _sheet.GetLowestDetentOffset();
+        var closeThreshold = Math.Min(maxOffset - 12, lowestDetent + Math.Max(82, maxOffset * 0.16));
+
+        if (translate.Y >= closeThreshold)
+        {
+            _sheet.Close();
+            return;
+        }
+
+        var snapped = _sheet.GetNearestDetentOffset(translate.Y);
+        _sheet.SetDetentIndex(snapped.index);
+        translate.Y = snapped.offset;
+        _sheet.SetMaskFromOffset(snapped.offset);
+        dragHandle.InvalidateVisual();
+    }
+
+    private void ResetTracking()
+    {
+        _isDragging = false;
+        _hasPendingDrag = false;
+        _dragScrollViewer = null;
+        _activePointerId = null;
+    }
+
+    private static bool CanStartDrag(Control dragHandle, PointerPressedEventArgs e)
+    {
+        if (e.Pointer.Type == PointerType.Mouse)
+        {
+            return e.GetCurrentPoint(dragHandle).Properties.IsLeftButtonPressed;
+        }
+
+        return true;
+    }
+
+    private static bool IsPointerStillPressed(Control dragHandle, PointerEventArgs e)
+    {
+        if (e.Pointer.Type == PointerType.Mouse)
+        {
+            return e.GetCurrentPoint(dragHandle).Properties.IsLeftButtonPressed;
+        }
+
+        return true;
+    }
+
+    private static bool IsScrolledToTop(ScrollViewer scrollViewer)
+    {
+        return scrollViewer.Offset.Y <= 0.5;
+    }
+
+    private static ScrollViewer? FindAncestorScrollViewer(object? source)
+    {
+        if (source is not Visual visual)
+        {
+            return null;
+        }
+
+        for (Visual? current = visual; current is not null; current = current.GetVisualParent() as Visual)
+        {
+            if (current is ScrollViewer scrollViewer)
+            {
+                return scrollViewer;
             }
         }
 
-        if (deltaY < 0)
-        {
-            return;
-        }
+        return null;
+    }
 
-        translate.Y += deltaY;
+    private static double GetPointerY(PointerEventArgs e, Visual reference)
+    {
+        var topLevel = TopLevel.GetTopLevel(reference);
+        return topLevel is not null ? e.GetPosition(topLevel).Y : e.GetPosition(reference).Y;
     }
 }

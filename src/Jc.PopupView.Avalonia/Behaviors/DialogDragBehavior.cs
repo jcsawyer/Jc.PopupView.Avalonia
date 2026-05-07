@@ -12,7 +12,7 @@ namespace Jc.PopupView.Avalonia.Behaviors;
 
 internal sealed class DialogDragBehavior : Behavior<Grid>
 {
-    private IDialog _dialog;
+    private IDialog? _dialog;
     private bool _isDragging;
     private Point _dragStart;
     private Point _lastDrag;
@@ -88,7 +88,7 @@ internal sealed class DialogDragBehavior : Behavior<Grid>
 
     private void GridOnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        if (!_dialog.IsOpen)
+        if (_dialog is null || !_dialog.IsOpen)
         {
             return;
         }
@@ -139,7 +139,7 @@ internal sealed class DialogDragBehavior : Behavior<Grid>
 
         if (ClickToDismiss)
         {
-            _dialog.Close();
+            _dialog?.Close();
             return;
         }
 
@@ -153,11 +153,14 @@ internal sealed class DialogDragBehavior : Behavior<Grid>
             var isOpen = !(translate.Y > _snapBackThreshold);
             if (isOpen)
             {
-                _dialog.IsOpen = true;
+                if (_dialog is not null)
+                {
+                    _dialog.IsOpen = true;
+                }
             }
             else
             {
-                _dialog.Close();
+                _dialog?.Close();
             }
         }
     }

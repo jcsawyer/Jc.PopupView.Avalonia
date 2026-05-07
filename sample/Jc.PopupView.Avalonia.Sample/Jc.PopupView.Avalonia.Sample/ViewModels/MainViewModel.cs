@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Jc.PopupView.Avalonia.Controls;
 using Jc.PopupView.Avalonia.Sample.Views.Sheets;
+using Jc.PopupView.Avalonia.Sample.Views.Toasts;
 using Jc.PopupView.Avalonia.Services;
 using ReactiveUI;
 
@@ -33,8 +34,16 @@ public class MainViewModel : ViewModelBase
     public ICommand OpenSheet3Command { get; }
 
     public ICommand OpenSheet4Command { get; }
+    public ICommand OpenSheetResultCommand { get; }
 
     public ICommand OpenNativeSheet1Command { get; }
+
+    private string? _lastSheetResult;
+    public string? LastSheetResult
+    {
+        get => _lastSheetResult;
+        set => this.RaiseAndSetIfChanged(ref _lastSheetResult, value);
+    }
 
     private bool _isToast1Open;
 
@@ -67,6 +76,14 @@ public class MainViewModel : ViewModelBase
     public ICommand OpenToast3Command { get; }
 
     public ICommand OpenToast4Command { get; }
+    public ICommand OpenToast5Command { get; }
+
+    private string? _lastToastResult;
+    public string? LastToastResult
+    {
+        get => _lastToastResult;
+        set => this.RaiseAndSetIfChanged(ref _lastToastResult, value);
+    }
     
     private bool _isFloater1Open;
     public bool IsFloater1Open
@@ -91,6 +108,14 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _isFloater3Open, value);
     }
     public ICommand OpenFloater3Command { get; }
+    public ICommand OpenFloater4Command { get; }
+
+    private string? _lastFloaterResult;
+    public string? LastFloaterResult
+    {
+        get => _lastFloaterResult;
+        set => this.RaiseAndSetIfChanged(ref _lastFloaterResult, value);
+    }
 
     public MainViewModel()
     {
@@ -99,6 +124,19 @@ public class MainViewModel : ViewModelBase
         OpenSheet3Command = ReactiveCommand.Create(() =>
             new DialogService().OpenSheet(new TextBlock { Text = "Hello, from dynamic dialog!" }));
         OpenSheet4Command = ReactiveCommand.Create(() => new DialogService().OpenSheet(new InteractiveSheet()));
+        OpenSheetResultCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var service = new DialogService();
+            var result = await service.ShowSheetForResultAsync<string, ResultSheet>(
+                new ResultSheet(),
+                sheet =>
+                {
+                    sheet.Detents = [0.78, 0.56, 0.36];
+                    sheet.InitialDetent = 0.56;
+                });
+
+            LastSheetResult = result ?? "cancelled";
+        });
         OpenNativeSheet1Command = ReactiveCommand.Create(() =>
             Native.BottomSheetService.Current?.ShowBottomSheet(new Sheet1()));
         OpenToast1Command = ReactiveCommand.Create(() => IsToast1Open = true);
@@ -108,8 +146,36 @@ public class MainViewModel : ViewModelBase
             new DialogService().OpenToast(
                 new TextBlock { Text = "Hello, from dynamic dialog!", Padding = new Thickness(10) },
                 toast => toast.Location = ToastLocation.Bottom));
+        OpenToast5Command = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var service = new DialogService();
+            var result = await service.ShowToastForResultAsync<string, Toast2Result>(
+                new Toast2Result(),
+                toast =>
+                {
+                    toast.Location = ToastLocation.Bottom;
+                    toast.ClickOutsideToDismiss = false;
+                    toast.ClickToDismiss = false;
+                    toast.ShowBackgroundMask = true;
+                });
+            LastToastResult = result ?? "cancelled";
+        });
         OpenFloater1Command = ReactiveCommand.Create(() => IsFloater1Open = true);
         OpenFloater2Command = ReactiveCommand.Create(() => IsFloater2Open = true);
         OpenFloater3Command = ReactiveCommand.Create(() => IsFloater3Open = true);
+        OpenFloater4Command = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var service = new DialogService();
+            var result = await service.ShowFloaterForResultAsync<string, Toast2Result>(
+                new Toast2Result(),
+                floater =>
+                {
+                    floater.Location = FloaterLocation.Bottom;
+                    floater.ClickOutsideToDismiss = false;
+                    floater.ClickToDismiss = false;
+                    floater.ShowBackgroundMask = true;
+                });
+            LastFloaterResult = result ?? "cancelled";
+        });
     }
 }

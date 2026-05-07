@@ -17,8 +17,10 @@
                         Padding="{TemplateBinding SafePadding}"
                         Content="{TemplateBinding Content}" />
 
-                    <!-- Sheet Host -->
-                    <Grid Name="PART_DialogHost" />
+                    <!-- Overlay Layers -->
+                    <Grid Name="PART_ModalLayer" />
+                    <Grid Name="PART_FloaterLayer" />
+                    <Grid Name="PART_ToastLayer" />
                 </Grid>
             </ControlTemplate>
         </Setter>
