@@ -13,7 +13,6 @@
         <Description>Beautiful, animated toasts, alerts, and other popups for Avalonia UI.</Description>
         <PackageProjectUrl>https://jcsawyer.com/</PackageProjectUrl>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
-        <RepositoryUrl>https://github.com/jcsawyer/Jc.PopupView.Avalonia/tree/main</RepositoryUrl>
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
