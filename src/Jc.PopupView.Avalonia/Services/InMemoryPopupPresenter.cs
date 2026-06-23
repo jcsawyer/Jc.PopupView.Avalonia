@@ -78,4 +78,29 @@ public sealed class InMemoryPopupPresenter : IPopupPresenter
         await handle.DismissAsync(cancellationToken).ConfigureAwait(false);
         return true;
     }
+
+    public async Task<int> DismissAllAsync(CancellationToken cancellationToken = default)
+    {
+        IPopupHandle[] handles;
+
+        await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            handles = _stack
+                .Select(entry => entry.Handle)
+                .Reverse()
+                .ToArray();
+        }
+        finally
+        {
+            _gate.Release();
+        }
+
+        foreach (var handle in handles)
+        {
+            await handle.DismissAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        return handles.Length;
+    }
 }

@@ -18,4 +18,5 @@ public interface IPopupPresenter
         CancellationToken cancellationToken = default);
 
     Task<bool> DismissTopMostAsync(CancellationToken cancellationToken = default);
+    Task<int> DismissAllAsync(CancellationToken cancellationToken = default);
 }

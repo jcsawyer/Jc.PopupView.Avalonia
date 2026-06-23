@@ -417,6 +417,31 @@
                             </Grid>
                         </Grid>
                     </Button>
+                    <TextBlock Classes="h1">Dismissal</TextBlock>
+                    <Button Classes="panel" Command="{Binding DismissTopMostDemoCommand}">
+                        <Grid ColumnSpacing="20" RowSpacing="10" ColumnDefinitions="Auto, *">
+                            <Border Grid.Column="0" Classes="icon">
+                                <Border HorizontalAlignment="Center" Width="28" Height="28" VerticalAlignment="Center" CornerRadius="14" />
+                            </Border>
+                            <Grid Grid.Column="1" RowDefinitions="Auto, Auto" ColumnDefinitions="*" VerticalAlignment="Center">
+                                <TextBlock Grid.Row="0" Classes="h2" Text="Dismiss top-most demo" />
+                                <TextBlock Grid.Row="1" Classes="p"
+                                           Text="Opens a popup and dismisses it through DismissTopMostAsync." />
+                            </Grid>
+                        </Grid>
+                    </Button>
+                    <Button Classes="panel" Command="{Binding DismissAllDemoCommand}">
+                        <Grid ColumnSpacing="20" RowSpacing="10" ColumnDefinitions="Auto, *">
+                            <Border Grid.Column="0" Classes="icon">
+                                <Border HorizontalAlignment="Center" Width="32" Height="22" VerticalAlignment="Center" CornerRadius="6" />
+                            </Border>
+                            <Grid Grid.Column="1" RowDefinitions="Auto, Auto" ColumnDefinitions="*" VerticalAlignment="Center">
+                                <TextBlock Grid.Row="0" Classes="h2" Text="Dismiss all demo" />
+                                <TextBlock Grid.Row="1" Classes="p"
+                                           Text="Opens multiple dialogs and clears all of them with DismissAllAsync." />
+                            </Grid>
+                        </Grid>
+                    </Button>
                 </StackPanel>
             </ScrollViewer>
             <popup:DialogHost.Sheets>

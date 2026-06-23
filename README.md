@@ -172,10 +172,15 @@ public interface IDialogService
         where TContent : Control, IPopupResultSource;
 
     Task<bool> DismissTopMostAsync(CancellationToken cancellationToken = default);
+    Task<int> DismissAllAsync(CancellationToken cancellationToken = default);
 }
 ```
 
 `Open*`/`Close*` methods remain available for direct control-based usage. The new async `Show*Async` APIs provide transient-style handles, options, and top-most dismissal.
+
+`DismissTopMostAsync` dismisses whichever dialog is currently top-most in the active `DialogHost`, including dialogs opened declaratively, via `Open*`, or via `Show*Async`.
+
+`DismissAllAsync` dismisses every currently open dialog in the active `DialogHost` and returns the number dismissed.
 
 `IPopupHandle` can be used to dismiss a specific popup instance:
 
