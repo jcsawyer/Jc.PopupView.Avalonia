@@ -27,4 +27,5 @@ public interface IDialogService
     Task<TResult?> ShowPopupForResultAsync<TResult, TContent>(TContent content, Action<Popup>? configure = null, CancellationToken cancellationToken = default)
         where TContent : Control, IPopupResultSource;
     Task<bool> DismissTopMostAsync(CancellationToken cancellationToken = default);
+    Task<int> DismissAllAsync(CancellationToken cancellationToken = default);
 }

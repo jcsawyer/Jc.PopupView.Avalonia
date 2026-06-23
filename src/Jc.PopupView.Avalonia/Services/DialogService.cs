@@ -219,6 +219,9 @@ public sealed class DialogService : IDialogService
     public Task<bool> DismissTopMostAsync(CancellationToken cancellationToken = default)
         => _presenter.DismissTopMostAsync(cancellationToken);
 
+    public Task<int> DismissAllAsync(CancellationToken cancellationToken = default)
+        => _presenter.DismissAllAsync(cancellationToken);
+
     private async Task<TResult?> ShowForResultAsync<TResult>(
         PopupKind kind,
         string route,

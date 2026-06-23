@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.Threading.Tasks;
+using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
@@ -124,6 +125,8 @@ public class MainViewModel : ViewModelBase
     public ICommand OpenPopup1Command { get; }
     public ICommand OpenPopup2Command { get; }
     public ICommand OpenPopup3Command { get; }
+    public ICommand DismissTopMostDemoCommand { get; }
+    public ICommand DismissAllDemoCommand { get; }
 
     private string? _lastFloaterResult;
     public string? LastFloaterResult
@@ -220,5 +223,70 @@ public class MainViewModel : ViewModelBase
                     popup.CloseAnimationType = PopupAnimationType.Slide;
                     popup.ClickOutsideToDismiss = true;
                 }));
+
+        DismissTopMostDemoCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var service = new DialogService();
+            service.OpenPopup(
+                new TextBlock
+                {
+                    Width = 280,
+                    TextWrapping = TextWrapping.Wrap,
+                    Text = "This popup was opened with OpenPopup(...). The sample dismisses it through DismissTopMostAsync without keeping a reference to the popup content."
+                },
+                popup =>
+                {
+                    popup.ClickOutsideToDismiss = false;
+                });
+
+            await Task.Delay(900);
+
+            await service.DismissTopMostAsync();
+        });
+
+        DismissAllDemoCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var service = new DialogService();
+
+            service.OpenPopup(
+                new TextBlock
+                {
+                    Width = 260,
+                    TextWrapping = TextWrapping.Wrap,
+                    Text = "Legacy popup opened through OpenPopup(...)."
+                },
+                popup => popup.ClickOutsideToDismiss = false);
+
+            service.OpenFloater(
+                new TextBlock
+                {
+                    Text = "Legacy floater opened through OpenFloater(...).",
+                    Padding = new Thickness(12)
+                },
+                floater =>
+                {
+                    floater.Location = FloaterLocation.Bottom;
+                    floater.ClickOutsideToDismiss = false;
+                    floater.ClickToDismiss = false;
+                });
+
+            await service.ShowToastAsync(
+                new TextBlock
+                {
+                    Text = "Tracked toast opened through ShowToastAsync(...).",
+                    Padding = new Thickness(12)
+                },
+                toast =>
+                {
+                    toast.Location = ToastLocation.Bottom;
+                    toast.ClickOutsideToDismiss = false;
+                    toast.ClickToDismiss = false;
+                    toast.ShowBackgroundMask = true;
+                });
+
+            await Task.Delay(900);
+
+            await service.DismissAllAsync();
+        });
     }
 }

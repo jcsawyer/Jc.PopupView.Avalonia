@@ -38,4 +38,12 @@ public sealed class OverlayPopupPresenter : IPopupPresenter
             ? _fallback.DismissTopMostAsync(cancellationToken)
             : host.DismissTopMostAsync(cancellationToken);
     }
+
+    public Task<int> DismissAllAsync(CancellationToken cancellationToken = default)
+    {
+        var host = PopupOverlayHostLocator.Current;
+        return host is null
+            ? _fallback.DismissAllAsync(cancellationToken)
+            : host.DismissAllAsync(cancellationToken);
+    }
 }

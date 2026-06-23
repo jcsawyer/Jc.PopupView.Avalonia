@@ -265,15 +265,63 @@ public class DialogHost : TemplatedControl, IPopupOverlayHost
 
     public async Task<bool> DismissTopMostAsync(CancellationToken cancellationToken = default)
     {
-        IPopupHandle? handle = null;
-        await Dispatcher.UIThread.InvokeAsync(() => { handle = _stack.LastOrDefault()?.Handle; });
-        if (handle is null)
+        OverlayEntry? trackedEntry = null;
+        IDialog? dialog = null;
+
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            dialog = GetTopMostOpenDialog();
+            trackedEntry = _stack.LastOrDefault(entry => ReferenceEquals(entry.Dialog, dialog));
+        });
+
+        if (dialog is null)
         {
             return false;
         }
 
-        await handle.DismissAsync(cancellationToken);
+        if (trackedEntry?.Handle is not null)
+        {
+            await trackedEntry.Handle.DismissAsync(cancellationToken);
+            return true;
+        }
+
+        await DismissDialogAsync(dialog, cancellationToken);
         return true;
+    }
+
+    public async Task<int> DismissAllAsync(CancellationToken cancellationToken = default)
+    {
+        List<IPopupHandle> handles = [];
+        List<IDialog> untrackedDialogs = [];
+
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            var dialogs = GetOpenDialogsInDismissOrder();
+            foreach (var dialog in dialogs)
+            {
+                var trackedEntry = _stack.LastOrDefault(entry => ReferenceEquals(entry.Dialog, dialog));
+                if (trackedEntry?.Handle is not null)
+                {
+                    handles.Add(trackedEntry.Handle);
+                }
+                else
+                {
+                    untrackedDialogs.Add(dialog);
+                }
+            }
+        });
+
+        foreach (var handle in handles)
+        {
+            await handle.DismissAsync(cancellationToken);
+        }
+
+        foreach (var dialog in untrackedDialogs)
+        {
+            await DismissDialogAsync(dialog, cancellationToken);
+        }
+
+        return handles.Count + untrackedDialogs.Count;
     }
 
     private async Task DismissInternalAsync(Guid id, CancellationToken cancellationToken)
@@ -301,6 +349,30 @@ public class DialogHost : TemplatedControl, IPopupOverlayHost
         await Dispatcher.UIThread.InvokeAsync(() => { _stack.RemoveAll(s => s.Id == id); });
     }
 
+    private async Task DismissDialogAsync(IDialog dialog, CancellationToken cancellationToken)
+    {
+        TimeSpan animationDuration = TimeSpan.Zero;
+
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            animationDuration = ResolveAnimationDuration(dialog);
+            dialog.Close();
+        });
+
+        if (animationDuration <= TimeSpan.Zero)
+        {
+            return;
+        }
+
+        try
+        {
+            await Task.Delay(animationDuration, cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+
     private static TimeSpan ResolveAnimationDuration(IDialog dialog)
     {
         return dialog switch
@@ -311,6 +383,56 @@ public class DialogHost : TemplatedControl, IPopupOverlayHost
             Popup popup => popup.AnimationDuration,
             _ => TimeSpan.FromMilliseconds(220),
         };
+    }
+
+    private IDialog? GetTopMostOpenDialog()
+    {
+        return FindTopMostOpenDialog(_toastLayer) ??
+               FindTopMostOpenDialog(_floaterLayer) ??
+               FindTopMostOpenDialog(_modalLayer);
+    }
+
+    private List<IDialog> GetOpenDialogsInDismissOrder()
+    {
+        var dialogs = new List<IDialog>();
+        AddOpenDialogsInReverseOrder(_toastLayer, dialogs);
+        AddOpenDialogsInReverseOrder(_floaterLayer, dialogs);
+        AddOpenDialogsInReverseOrder(_modalLayer, dialogs);
+        return dialogs;
+    }
+
+    private static IDialog? FindTopMostOpenDialog(Panel? layer)
+    {
+        if (layer is null)
+        {
+            return null;
+        }
+
+        for (var index = layer.Children.Count - 1; index >= 0; index--)
+        {
+            if (layer.Children[index] is IDialog dialog && dialog.IsOpen)
+            {
+                return dialog;
+            }
+        }
+
+        return null;
+    }
+
+    private static void AddOpenDialogsInReverseOrder(Panel? layer, List<IDialog> dialogs)
+    {
+        if (layer is null)
+        {
+            return;
+        }
+
+        for (var index = layer.Children.Count - 1; index >= 0; index--)
+        {
+            if (layer.Children[index] is IDialog dialog && dialog.IsOpen)
+            {
+                dialogs.Add(dialog);
+            }
+        }
     }
 
     private void AddEntry(OverlayEntry entry)
