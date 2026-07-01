@@ -89,11 +89,6 @@ public class DialogHost : TemplatedControl, IPopupOverlayHost
     {
         base.OnApplyTemplate(e);
 
-        if (TopLevel.GetTopLevel(this) is { } topLevel)
-        {
-            DialogHostRegistry.Register(topLevel, this);
-        }
-
         _modalLayer = e.NameScope.Find<Grid>("PART_ModalLayer");
         _floaterLayer = e.NameScope.Find<Grid>("PART_FloaterLayer");
         _toastLayer = e.NameScope.Find<Grid>("PART_ToastLayer");
@@ -203,6 +198,11 @@ public class DialogHost : TemplatedControl, IPopupOverlayHost
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
+        if (TopLevel.GetTopLevel(this) is { } topLevel)
+        {
+            DialogHostRegistry.Register(topLevel, this);
+        }
+
         PopupOverlayHostLocator.Register(this);
     }
 
