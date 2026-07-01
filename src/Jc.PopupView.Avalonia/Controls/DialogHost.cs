@@ -209,6 +209,11 @@ public class DialogHost : TemplatedControl, IPopupOverlayHost
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnDetachedFromVisualTree(e);
+        if (TopLevel.GetTopLevel(this) is { } topLevel)
+        {
+            DialogHostRegistry.Unregister(topLevel, this);
+        }
+
         PopupOverlayHostLocator.Clear(this);
     }
 
