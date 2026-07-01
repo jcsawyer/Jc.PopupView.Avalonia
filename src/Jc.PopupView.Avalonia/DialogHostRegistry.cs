@@ -20,6 +20,21 @@ internal static class DialogHostRegistry
         topLevel.GotFocus += (_, _) => SetActive(topLevel);
     }
 
+    public static void Unregister(TopLevel topLevel, DialogHost root)
+    {
+        if (Hosts.TryGetValue(topLevel, out var weak) &&
+            weak.TryGetTarget(out var host) &&
+            ReferenceEquals(host, root))
+        {
+            Hosts.Remove(topLevel);
+        }
+
+        if (ReferenceEquals(_active, topLevel))
+        {
+            _active = Hosts.Keys.FirstOrDefault();
+        }
+    }
+
     private static void SetActive(Visual visual)
     {
         _active = visual;
