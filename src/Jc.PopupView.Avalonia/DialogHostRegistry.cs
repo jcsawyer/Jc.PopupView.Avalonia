@@ -14,6 +14,7 @@ internal static class DialogHostRegistry
     public static void Register(TopLevel topLevel, DialogHost root)
     {
         Hosts[topLevel] = new WeakReference<DialogHost>(root);
+        SetActive(topLevel);
 
         topLevel.AttachedToVisualTree += (_, _) => SetActive(topLevel);
         topLevel.GotFocus += (_, _) => SetActive(topLevel);
